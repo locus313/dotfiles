@@ -1,9 +1,15 @@
-{{- $email := promptString "Git email address for the author/committer" }}
-{{- $name := promptString "Git username for the author/committer" }}
+{{ $email := promptStringOnce . "email" "Git email address for the author/committer" }}
+{{ $name := promptStringOnce . "name" "Git username for the author/committer" }}
+{{ $bwcliid := promptStringOnce . "bwcliid" "What's the Bitwarden API client id" }}
+{{ $bwclisecret := promptStringOnce . "bwclisecret" "What's the Bitwarden API client secret" }}
 
 [data]
     email = "{{ $email }}"
     name = "{{ $name }}"
+
+[scriptEnv]
+    BW_CLIENTID = {{ $bwcliid | quote }}
+    BW_CLIENTSECRET = {{ $bwclisecret | quote }}
 
 [hooks.read-source-state.pre]
     command = ".local/share/chezmoi/.install-password-manager.sh"
