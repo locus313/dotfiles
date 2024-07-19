@@ -1,0 +1,23 @@
+#!/bin/sh
+
+echo "[-] Updating packages [-]"
+
+{{- if eq .chezmoi.os "linux" }}
+{{- else if eq .chezmoi.osRelease.idLike "fedora" }}
+{{ range .packages.linux.dnfs -}}
+sudo dnf install -y {{ . | quote }}
+{{ end -}}
+{{- else if (eq .chezmoi.osRelease.id "debian" "ubuntu") }}
+echo "[-] Updating Apt packages [-]"
+sudo apt update
+{{ range .packages.linux.apts -}}
+sudo apt install -y {{ . | quote }}
+{{ end -}}
+{{ end -}}
+
+{{- if eq .chezmoi.os "darwin" }}
+echo "[-] Updating brews [-]"
+{{ range .packages.darwin.brews -}}
+brew install  {{ . | quote }}
+{{ end -}}
+{{ end -}}

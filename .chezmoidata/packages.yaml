@@ -1,0 +1,16 @@
+packages:
+  darwin:
+    brews:
+      - git
+      - curl
+  linux:
+    dnfs:
+      - git-all
+      - curl
+      - bash
+      - zsh
+    apts:
+      - git
+      - curl 
+      - bash 
+      - zsh 
