@@ -9,8 +9,10 @@ packages:
       - curl
       - bash
       - zsh
+      - unzip
     apts:
       - git
       - curl 
       - bash 
-      - zsh 
+      - zsh
+      - unzip 
