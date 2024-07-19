@@ -3,7 +3,7 @@
 echo "[-] Updating packages [-]"
 
 {{- if eq .chezmoi.os "linux" }}
-{{- else if eq .chezmoi.osRelease.idLike "almalinux" }}
+{{- else if eq .chezmoi.osRelease.id "almalinux" }}
 {{ range .packages.linux.dnfs -}}
 sudo dnf install -y {{ . | quote }}
 {{ end -}}
