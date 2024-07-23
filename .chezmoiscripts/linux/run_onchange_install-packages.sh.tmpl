@@ -1,3 +1,4 @@
+{{- if (eq .chezmoi.os "linux" "darwin") }}
 #!/bin/sh
 
 echo "[-] Updating packages [-]"
@@ -19,5 +20,6 @@ sudo apt install -y {{ . | quote }}
 echo "[-] Updating brews [-]"
 {{ range .packages.darwin.brews -}}
 brew install  {{ . | quote }}
+{{ end -}}
 {{ end -}}
 {{ end -}}

@@ -12,4 +12,9 @@
     BW_CLIENTSECRET = {{ $bwclisecret | quote }}
 
 [hooks.read-source-state.pre]
-    command = ".local/share/chezmoi/.install-password-manager.sh"
+{{- if eq .chezmoi.os "windows" }}
+    command = "pwsh.exe"
+    args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager.ps1"]
+{{- else }}
+    command = ".local/share/chezmoi/.chezmoihooks/install-password-manager.sh"
+{{- end }}
