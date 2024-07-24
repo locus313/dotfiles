@@ -1,0 +1,22 @@
+{{- if eq .chezmoi.os "windows" }}
+# https://ohmyposh.dev/docs/faq#my-prompt-is-broken-after-upgrading-to-powershell-74
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+
+# default command to load oh-my-posh including default theme
+# oh-my-posh init pwsh | Invoke-Expression
+
+oh-my-posh init pwsh --config $env:POSH_THEMES_PATH\night-owl.omp.json | Invoke-Expression
+
+# load posh-git module
+$modules = "posh-git", "Terminal-Icons", "PsReadLine"
+
+foreach ($module in $modules) {
+    if (-not (Get-Module -ListAvailable -Name $module)) {
+        Install-Module -Name $module -Scope CurrentUser -Force -SkipPublisherCheck
+    }
+    Import-Module -Name $module
+}
+
+# Set PSReadLine Options
+Set-PSReadLineOption -PredictionViewStyle ListView
+{{- end }}
