@@ -1,0 +1,11 @@
+{{ range .packages.windows.powershell -}}
+Install-Module {{ . | quote }} -Scope CurrentUser
+{{ end -}}
+
+{{ range .packages.windows.winget -}}
+winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
+{{ end -}}
+
+{{ range .packages.windows.msstore -}}
+winget install --source msstore --accept-package-agreements --uninstall-previous {{ . | quote }}
+{{ end -}}

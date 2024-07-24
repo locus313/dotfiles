@@ -15,4 +15,11 @@ packages:
       - curl 
       - bash 
       - zsh
-      - unzip 
+      - unzip
+  windows:
+     powershell:
+     winget:
+       - Git.Git
+       - Microsoft.PowerShell
+       - Microsoft.VisualStudioCode
+     msstore:
