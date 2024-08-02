@@ -23,6 +23,7 @@ packages:
        - Terminal-Icons
        - PsReadLine
      winget:
+       - JanDeDobbeleer.OhMyPosh
        - Git.Git
        - Microsoft.PowerShell
        - Microsoft.VisualStudioCode
