@@ -1,0 +1,12 @@
+{{- if eq .chezmoi.os "windows" }}
+
+# network utilities
+function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
+
+# system utilities
+
+function reload-profile {
+    & $profile
+}
+
+{{- end }}

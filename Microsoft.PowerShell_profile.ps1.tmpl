@@ -17,80 +17,16 @@ foreach ($module in $modules) {
     Import-Module -Name $module
 }
 
-# Set PSReadLine Options
-Set-PSReadLineOption -PredictionViewStyle ListView
+# PSReadLine config
+. "$env:USERPROFILE/Scripts/PowerShell/psreadline.ps1"
 
-# Editor Configuration
-function touch($file) { "" | Out-File $file -Encoding ASCII }
+# Githelpers
+. "$env:USERPROFILE/Scripts/PowerShell/githelpers.ps1"
 
-# network utilities
-function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
+# Linux like commands for Windows
+. "$env:USERPROFILE/Scripts/PowerShell/linuxlike.ps1"
 
-# system utilities
-
-function reload-profile {
-    & $profile
-}
-
-function unzip ($file) {
-    Write-Output("Extracting", $file, "to", $pwd)
-    $fullFile = Get-ChildItem -Path $pwd -Filter $file | ForEach-Object { $_.FullName }
-    Expand-Archive -Path $fullFile -DestinationPath $pwd
-}
-
-function grep($regex, $dir) {
-    if ( $dir ) {
-        Get-ChildItem $dir | select-string $regex
-        return
-    }
-    $input | select-string $regex
-}
-
-function df {
-    get-volume
-}
-
-function sed($file, $find, $replace) {
-    (Get-Content $file).replace("$find", $replace) | Set-Content $file
-}
-
-function which($name) {
-    Get-Command $name | Select-Object -ExpandProperty Definition
-}
-
-function export($name, $value) {
-    set-item -force -path "env:$name" -value $value;
-}
-
-function pkill($name) {
-    Get-Process $name -ErrorAction SilentlyContinue | Stop-Process
-}
-
-function pgrep($name) {
-    Get-Process $name
-}
-
-function head {
-  param($Path, $n = 10)
-  Get-Content $Path -Head $n
-}
-
-function tail {
-  param($Path, $n = 10, [switch]$f = $false)
-  Get-Content $Path -Tail $n -Wait:$f
-}
-
-# Enhanced Listing
-function la { Get-ChildItem -Path . -Force | Format-Table -AutoSize }
-function ll { Get-ChildItem -Path . -Force -Hidden | Format-Table -AutoSize }
-
-# Git Shortcuts
-function gs { git status }
-
-function ga { git add . }
-
-function gc { param($m) git commit -m "$m" }
-
-function gp { git push }
+# Utils
+. "$env:USERPROFILE/Scripts/PowerShell/utils.ps1"
 
 {{- end }}
