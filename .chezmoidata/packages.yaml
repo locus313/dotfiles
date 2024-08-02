@@ -18,6 +18,10 @@ packages:
       - unzip
   windows:
      powershell:
+       - Microsoft.Graph
+       - Posh-Git
+       - Terminal-Icons
+       - PsReadLine
      winget:
        - Git.Git
        - Microsoft.PowerShell
