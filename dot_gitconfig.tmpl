@@ -2,6 +2,8 @@
 	email = {{ .email }}
 	name = {{ .name }}
 {{- if eq .chezmoi.os "windows" }}
+{{ if chezmoi.data.oagmode }}
 [http]
     sslcainfo = ~/AppData/Roaming/custom-ca-bundle.pem
+{{- end }}
 {{- end }}
