@@ -115,3 +115,9 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# aws-vault backend
+export AWS_VAULT_BACKEND=file
+
+# oh-my-posh
+eval "$(oh-my-posh init bash --config ~/.poshthemes/night-owl.omp.json)"
