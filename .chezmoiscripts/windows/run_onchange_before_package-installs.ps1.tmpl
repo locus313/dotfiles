@@ -1,3 +1,4 @@
+{{ if eq .chezmoi.os "windows" -}}
 {{ range .packages.windows.powershell -}}
 Install-Module {{ . | quote }} -Scope CurrentUser
 {{ end -}}
@@ -8,4 +9,5 @@ winget install --source winget --accept-package-agreements --uninstall-previous 
 
 {{ range .packages.windows.msstore -}}
 winget install --source msstore --accept-package-agreements --uninstall-previous {{ . | quote }}
+{{ end -}}
 {{ end -}}
