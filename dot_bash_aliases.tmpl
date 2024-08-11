@@ -4,4 +4,10 @@ alias gs='git status'
 alias ga='git add .'
 alias gc='git commit'
 alias gp='git push'
+
+# network utilities
+function pubip {
+    curl -s http://ifconfig.me/ip
+}
+
 {{- end }}
