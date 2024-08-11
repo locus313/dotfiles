@@ -7,7 +7,7 @@ alias gp='git push'
 
 # network utilities
 function pubip {
-    curl -s http://ifconfig.me/ip
+    curl -s http://ifconfig.me/ip -w "\n"
 }
 
 {{- end }}
