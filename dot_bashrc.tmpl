@@ -117,9 +117,11 @@ if ! shopt -oq posix; then
   fi
 fi
 
+{{- if eq .ptxmode true }}
 # aws-vault backend
 export AWS_VAULT_BACKEND=file
 export AWS_VAULT_FILE_PASSPHRASE={{ (bitwardenFields "item" "chezmoi").awsvault.value | quote }}
+{{- end }}
 
 # oh-my-posh
 eval "$(oh-my-posh init bash --config ~/.poshthemes/night-owl.omp.json)"
