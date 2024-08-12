@@ -4,11 +4,34 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
-# Git Shortcuts
+# git shortcuts
 alias gs='git status'
 alias ga='git add .'
 alias gc='git commit'
 alias gp='git push'
+
+# bitwarden 
+function bwu {
+    BW_STATUS=$(bw status | jq -r .status)
+    case "$BW_STATUS" in
+    "unauthenticated")
+        echo "Logging into BitWarden"
+        export BW_SESSION=$(bw login --raw)
+        ;;
+    "locked")
+        echo "Unlocking Vault"
+        export BW_SESSION=$(bw unlock --raw)
+        ;;
+    "unlocked")
+        echo "Vault is unlocked"
+        ;;
+    *)
+        echo "Unknown Login Status: $BW_STATUS"
+        return 1
+        ;;
+    esac
+    bw sync
+}
 
 # network utilities
 function pubip {

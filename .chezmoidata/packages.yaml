@@ -10,12 +10,14 @@ packages:
       - bash
       - zsh
       - unzip
+      - jq
     apts:
       - git
       - curl 
       - bash 
       - zsh
       - unzip
+      - jq
   windows:
      powershell:
        - Microsoft.Graph
