@@ -35,9 +35,9 @@ function bwu {
 }
 
 # chezmoi
-function chezmoi {
+function chezmoi() (
   BW_SESSION="$(bw unlock --raw)" command chezmoi "$@"
-}
+)
 {{ end }}
 
 # network utilities
