@@ -15,4 +15,11 @@ function pubip {
     curl -s http://ifconfig.me/ip -w "\n"
 }
 
+# system utilities
+function reload-profile {
+    . ~/.bashrc
+}
+
+alias rp='reload-profile'
+
 {{- end }}
