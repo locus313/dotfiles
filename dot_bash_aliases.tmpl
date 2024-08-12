@@ -10,6 +10,7 @@ alias ga='git add .'
 alias gc='git commit'
 alias gp='git push'
 
+{{ if (or (eq .pmode true) (eq .oagmode true)) }}
 # bitwarden 
 function bwu {
     BW_STATUS=$(bw status | jq -r .status)
@@ -32,6 +33,12 @@ function bwu {
     esac
     bw sync
 }
+
+# chezmoi
+function chezmoi {
+  BW_SESSION="$(bw unlock --raw)" command chezmoi "$@"
+}
+{{ end }}
 
 # network utilities
 function pubip {
