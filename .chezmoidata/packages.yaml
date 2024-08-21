@@ -31,4 +31,5 @@ packages:
        - Microsoft.PowerShell
        - Microsoft.VisualStudioCode
        - Microsoft.AzureCLI
+       - twpayne.chezmoi
      msstore:
