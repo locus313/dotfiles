@@ -24,6 +24,7 @@ packages:
        - Posh-Git
        - Terminal-Icons
        - PsReadLine
+       - Az
      winget:
        - JanDeDobbeleer.OhMyPosh
        - Git.Git
