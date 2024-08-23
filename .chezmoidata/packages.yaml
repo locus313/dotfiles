@@ -31,5 +31,6 @@ packages:
        - Microsoft.PowerShell
        - Microsoft.VisualStudioCode
        - Microsoft.AzureCLI
+       - Bitwarden.CLI
        - twpayne.chezmoi
      msstore:
