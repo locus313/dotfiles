@@ -33,4 +33,5 @@ packages:
        - Microsoft.AzureCLI
        - Bitwarden.CLI
        - twpayne.chezmoi
+       - Obsidian.Obsidian
      msstore:
