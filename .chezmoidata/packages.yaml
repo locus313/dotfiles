@@ -34,3 +34,6 @@ packages:
        - twpayne.chezmoi
        - Obsidian.Obsidian
      msstore:
+     ptxmode:
+        winget:
+          - 1password-cli

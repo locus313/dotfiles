@@ -20,7 +20,12 @@
 [hooks.read-source-state.pre]
 {{- if eq .chezmoi.os "windows" }}
     command = "pwsh.exe"
-    args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager.ps1"]
+    {{ if (or (eq .pmode true) (eq .oagmode true)) }}
+    args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager-bw.ps1"]
+    {{ end }}
+    {{ if eq .ptxmode true }}
+    args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager-op.ps1"]
+    {{ end }}
 {{- else }}
     command = ".local/share/chezmoi/.chezmoihooks/install-password-manager.sh"
 {{- end }}
