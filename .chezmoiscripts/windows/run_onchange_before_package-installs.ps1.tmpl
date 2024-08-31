@@ -13,6 +13,18 @@ winget install --source winget --accept-package-agreements --uninstall-previous 
 {{ end -}}
 {{ end }}
 
+{{ if eq .pmode true }}
+{{ range .packages.windows.pmode.winget -}}
+winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
+{{ end -}}
+{{ end }}
+
+{{ if eq .oagmode true }}
+{{ range .packages.windows.oagmode.winget -}}
+winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
+{{ end -}}
+{{ end }}
+
 {{ range .packages.windows.msstore -}}
 winget install --source msstore --accept-package-agreements --uninstall-previous {{ . | quote }}
 {{ end -}}

@@ -20,7 +20,6 @@ packages:
       - jq
   windows:
      powershell:
-       - Microsoft.Graph
        - Posh-Git
        - Terminal-Icons
        - PsReadLine
@@ -29,11 +28,17 @@ packages:
        - Git.Git
        - Microsoft.PowerShell
        - Microsoft.VisualStudioCode
-       - Microsoft.AzureCLI
-       - Bitwarden.CLI
        - twpayne.chezmoi
        - Obsidian.Obsidian
      msstore:
+     pmode:
+        winget:
+          - Bitwarden.CLI
      ptxmode:
         winget:
           - 1password-cli
+          - Microsoft.AzureCLI
+     oagmode:
+        winget:
+          - Bitwarden.CLI
+          - Microsoft.Graph
