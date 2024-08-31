@@ -3,8 +3,6 @@
 {{ $pmode := promptBoolOnce . "pmode" "Use pmode" }}
 {{ $oagmode := promptBoolOnce . "oagmode" "Use oagmode" }}
 {{ $ptxmode := promptBoolOnce . "ptxmode" "Use ptxmode" }}
-{{ $bwcliid := promptStringOnce . "bwcliid" "What's the Bitwarden API client id" }}
-{{ $bwclisecret := promptStringOnce . "bwclisecret" "What's the Bitwarden API client secret" }}
 
 [data]
     email = "{{ $email }}"
@@ -12,10 +10,6 @@
     pmode = {{ $pmode }}
     oagmode = {{ $oagmode }}
     ptxmode = {{ $ptxmode }}
-
-[scriptEnv]
-    BW_CLIENTID = {{ $bwcliid | quote }}
-    BW_CLIENTSECRET = {{ $bwclisecret | quote }}
 
 [hooks.read-source-state.pre]
 {{- if eq .chezmoi.os "windows" }}
