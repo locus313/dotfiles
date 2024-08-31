@@ -7,9 +7,11 @@ Install-Module {{ . | quote }} -Scope CurrentUser
 winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
 {{ end -}}
 
+{{ if eq .ptxmode true }}
 {{ range .packages.windows.ptxmode.winget -}}
 winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
 {{ end -}}
+{{ end }}
 
 {{ range .packages.windows.msstore -}}
 winget install --source msstore --accept-package-agreements --uninstall-previous {{ . | quote }}
