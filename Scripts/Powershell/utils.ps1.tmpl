@@ -1,5 +1,4 @@
-{{- if eq .chezmoi.os "windows" }}
-
+{{- if eq .chezmoi.os "windows" -}}
 # network utilities
 function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
 
@@ -8,5 +7,4 @@ function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
 function reload-profile {
     & $profile
 }
-
 {{- end }}

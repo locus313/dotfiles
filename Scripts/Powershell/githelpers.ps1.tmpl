@@ -1,5 +1,4 @@
-{{- if eq .chezmoi.os "windows" }}
-
+{{- if eq .chezmoi.os "windows" -}}
 # Git Shortcuts
 function gs { git status }
 
@@ -8,5 +7,4 @@ function ga { git add . }
 function gc { param($m) git commit -m "$m" }
 
 function gp { git push }
-
 {{- end }}
