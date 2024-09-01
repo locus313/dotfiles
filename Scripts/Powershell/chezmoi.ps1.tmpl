@@ -5,4 +5,9 @@ function cz {
     chezmoi $args
 }
 {{ end }}
+{{ if eq .ptxmode true }}
+function cz {
+    chezmoi $args
+}
+{{ end }}
 {{- end }}
