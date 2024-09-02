@@ -1,6 +1,6 @@
 {{ if eq .chezmoi.os "windows" -}}
 {{ range .packages.windows.powershell -}}
-Install-Module {{ . | quote }} -Scope CurrentUser
+Install-PSResource {{ . | quote }} -Scope CurrentUser
 {{ end -}}
 
 {{ range .packages.windows.winget -}}
