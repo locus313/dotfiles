@@ -23,6 +23,7 @@ packages:
        - Posh-Git
        - Terminal-Icons
        - PsReadLine
+       - Get-WHOIS
      winget:
        - JanDeDobbeleer.OhMyPosh
        - Git.Git
