@@ -21,5 +21,8 @@ echo "[-] Updating brews [-]"
 {{ range .packages.darwin.brews -}}
 brew install  {{ . | quote }}
 {{ end -}}
+{{ range .extensions.vscode }}
+code --force --install-extension {{ . | quote }}
+{{ end }}
 {{ end -}}
 {{ end -}}

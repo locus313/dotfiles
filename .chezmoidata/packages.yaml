@@ -42,3 +42,6 @@ packages:
         winget:
           - Bitwarden.CLI
           - Microsoft.Graph
+extensions:
+  vscode:
+    - ms-vscode-remote.remote-wsl
