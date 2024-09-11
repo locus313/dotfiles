@@ -1,4 +1,9 @@
 {{- if eq .chezmoi.os "linux" }}
+[".fonts/CascadiaCode"]
+  type = "archive"
+  url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip"
+  exact = true
+
 [".local/bin/oh-my-posh"]
     type = "file"
     url = "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-{{ .chezmoi.os }}-{{ .chezmoi.arch }}"
