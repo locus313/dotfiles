@@ -26,8 +26,8 @@ fi
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
-
+{{- if .wsl }}
 # oh-my-posh
 eval "$(oh-my-posh init bash --config ~/.poshthemes/night-owl.omp.json)"
-
+{{- end }}
 {{- end }}

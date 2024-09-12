@@ -4,12 +4,15 @@
 {{ $oagmode := promptBoolOnce . "oagmode" "Use oagmode" }}
 {{ $ptxmode := promptBoolOnce . "ptxmode" "Use ptxmode" }}
 
+{{- $wsl := (and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft")) -}}
+
 [data]
     email = "{{ $email }}"
     name = "{{ $name }}"
     pmode = {{ $pmode }}
     oagmode = {{ $oagmode }}
     ptxmode = {{ $ptxmode }}
+    wsl = {{ $wsl }}
 
 [hooks.read-source-state.pre]
 {{- if eq .chezmoi.os "windows" }}
