@@ -35,8 +35,9 @@ function bwu {
 }
 
 # chezmoi
-function chezmoi() (
-  BW_SESSION="$(bw unlock --raw)" command chezmoi "$@"
+function cz() (
+  export BW_SESSION=$(bw unlock --raw) 
+  command chezmoi "$@"
 )
 {{ end }}
 
