@@ -48,7 +48,9 @@ extensions:
   linux:
     vscode:
       - mhutchie.git-graph
+      - arturbelico.code-sum-up
   windows:
     vscode:
       - ms-vscode-remote.remote-wsl
       - mhutchie.git-graph
+      - arturbelico.code-sum-up
