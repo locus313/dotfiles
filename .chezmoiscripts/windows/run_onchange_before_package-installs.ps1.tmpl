@@ -29,7 +29,7 @@ winget install --source winget --accept-package-agreements --uninstall-previous 
 winget install --source msstore --accept-package-agreements --uninstall-previous {{ . | quote }}
 {{ end -}}
 
-{{ range .extensions.vscode }}
+{{ range .extensions.windows.vscode }}
 code --force --install-extension {{ . | quote }}
 {{ end }}
 

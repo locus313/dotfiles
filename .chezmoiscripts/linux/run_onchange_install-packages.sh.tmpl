@@ -8,20 +8,23 @@ echo "[-] Updating packages [-]"
 {{ range .packages.linux.dnfs -}}
 sudo dnf install -y {{ . | quote }}
 {{ end -}}
-{{- else if (eq .chezmoi.osRelease.id "debian" "ubuntu") }}
+{{- else if (eq .chezmoi.osRelease.id "debian" "ubuntu" "pop") }}
 echo "[-] Updating Apt packages [-]"
 sudo apt update
 {{ range .packages.linux.apts -}}
 sudo apt install -y {{ . | quote }}
 {{ end -}}
 {{ end -}}
+{{ range .extensions.linux.vscode }}
+code --force --install-extension {{ . | quote }}
+{{ end }}
 
 {{- if eq .chezmoi.os "darwin" }}
 echo "[-] Updating brews [-]"
 {{ range .packages.darwin.brews -}}
 brew install  {{ . | quote }}
 {{ end -}}
-{{ range .extensions.vscode }}
+{{ range .extensions.darwin.vscode }}
 code --force --install-extension {{ . | quote }}
 {{ end }}
 {{ end -}}

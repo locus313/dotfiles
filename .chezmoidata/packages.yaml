@@ -44,5 +44,11 @@ packages:
           - Bitwarden.CLI
           - Microsoft.Graph
 extensions:
-  vscode:
-    - ms-vscode-remote.remote-wsl
+  darwin:
+  linux:
+    vscode:
+      - mhutchie.git-graph
+  windows:
+    vscode:
+      - ms-vscode-remote.remote-wsl
+      - mhutchie.git-graph
