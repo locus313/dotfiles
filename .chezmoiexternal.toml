@@ -10,6 +10,12 @@
     executable = true
     refreshPeriod = "168h"
 
+[".local/bin/host-spawn"]
+    type = "file"
+    url = "https://github.com/1player/host-spawn/releases/latest/download/host-spawn-x86_64"
+    executable = true
+    refreshPeriod = "168h"
+
 [".poshthemes"]
     type = "archive"
     url = "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip"
