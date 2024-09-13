@@ -1,6 +1,8 @@
 {{ if (eq .chezmoi.os "linux" "darwin") -}}
 #!/bin/sh
 
+code="flatpak run com.visualstudio.code"
+
 echo "[-] Updating packages [-]"
 
 {{- if eq .chezmoi.os "linux" }}
@@ -16,7 +18,7 @@ sudo apt install -y {{ . | quote }}
 {{ end -}}
 {{ end -}}
 {{ range .extensions.linux.vscode }}
-code --force --install-extension {{ . | quote }}
+$code --force --install-extension {{ . | quote }}
 {{ end }}
 
 {{- if eq .chezmoi.os "darwin" }}

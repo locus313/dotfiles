@@ -41,6 +41,11 @@ function cz() (
 )
 {{ end }}
 
+# vscode
+function code() {
+  (flatpak run com.visualstudio.code $*)
+}
+
 # network utilities
 function pubip {
     curl -s http://ifconfig.me/ip -w "\n"
