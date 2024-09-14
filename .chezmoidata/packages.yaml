@@ -19,6 +19,7 @@ packages:
       - unzip
       - jq
       - ncdu
+      - direnv
     flatpak:
       - com.bitwarden.desktop
       - com.discordapp.Discord
@@ -64,6 +65,14 @@ extensions:
     vscode:
       - mhutchie.git-graph
       - arturbelico.code-sum-up
+      - mkhl.direnv
+      - eamodio.gitlens
+      - hashicorp.terraform
+      - GitHub.copilot
+      - timonwong.shellcheck
+      - emmanuelbeziat.vscode-great-icons
+      - redhat.vscode-xml
+      - redhat.vscode-yaml
   windows:
     vscode:
       - ms-vscode-remote.remote-wsl
