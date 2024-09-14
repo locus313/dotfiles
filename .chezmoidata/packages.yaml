@@ -34,6 +34,7 @@ packages:
       - org.remmina.Remmina
       - org.videolan.VLC
       - tv.plex.PlexDesktop
+      - io.missioncenter.MissionCenter
   windows:
      powershell:
        - Posh-Git
