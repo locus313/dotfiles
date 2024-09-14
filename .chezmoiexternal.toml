@@ -2,6 +2,7 @@
 [".fonts/CascadiaCode"]
   type = "archive"
   url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip"
+  refreshPeriod = "168h"
   exact = true
 
 [".local/bin/oh-my-posh"]

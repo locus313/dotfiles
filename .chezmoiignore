@@ -2,3 +2,8 @@
 AppData
 Documents
 {{ end }}
+
+{{- if eq .chezmoi.os "linux" }}
+.fonts/.uuid
+.fonts/*/.uuid
+{{- end }}
