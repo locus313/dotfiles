@@ -2,4 +2,18 @@ Host github.com
   User git
   Port 22
   PreferredAuthentications publickey
+  {{- if eq .pmode true }}
   IdentityFile ~/.ssh/id_rsa
+  {{- else if eq .ptxmode true }}
+  IdentityFile ~/.ssh/ptx_id_rsa
+  {{- else if eq .oagmode true }}
+  IdentityFile ~/.ssh/id_rsa
+  {{- end }}
+
+  {{- if eq .ptxmode true }}
+  # SSH over Session Manager
+ host i-* mi-*
+     User ec2-user
+     IdentityFile ~/.ssh/ptx_id_rsa
+     ProxyCommand bash -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+ {{- end }}
