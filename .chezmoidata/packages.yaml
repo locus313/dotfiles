@@ -18,6 +18,20 @@ packages:
       - zsh
       - unzip
       - jq
+    flatpak:
+      - com.bitwarden.desktop
+      - com.discordapp.Discord
+      - com.github.tchx84.Flatseal
+      - com.synology.SynologyDrive
+      - com.valvesoftware.Steam
+      - com.visualstudio.code
+      - dev.deedles.Trayscale
+      - md.obsidian.Obsidian
+      - org.flameshot.Flameshot
+      - org.mozilla.Thunderbird
+      - org.remmina.Remmina
+      - org.videolan.VLC
+      - tv.plex.PlexDesktop
   windows:
      powershell:
        - Posh-Git

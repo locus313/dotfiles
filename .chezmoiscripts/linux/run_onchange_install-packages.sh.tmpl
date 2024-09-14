@@ -21,6 +21,12 @@ sudo apt install -y {{ . | quote }}
 $code --force --install-extension {{ . | quote }}
 {{ end }}
 
+{{- if eq .chezmoi.osRelease.id "pop" }}
+{{ range .packages.linux.flatpak -}}
+flatpak install -y {{ . | quote }}
+{{ end -}}
+{{ end }}
+
 {{- if eq .chezmoi.os "darwin" }}
 echo "[-] Updating brews [-]"
 {{ range .packages.darwin.brews -}}
