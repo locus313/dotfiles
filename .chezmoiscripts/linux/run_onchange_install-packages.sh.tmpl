@@ -6,11 +6,12 @@ code="flatpak run com.visualstudio.code"
 echo "[-] Updating packages [-]"
 
 {{- if eq .chezmoi.os "linux" }}
-{{- else if eq .chezmoi.osRelease.id "almalinux" }}
+{{- if eq .chezmoi.osRelease.id "almalinux" }}
 {{ range .packages.linux.dnfs -}}
 sudo dnf install -y {{ . | quote }}
 {{ end -}}
-{{- else if (eq .chezmoi.osRelease.id "debian" "ubuntu" "pop") }}
+{{ end -}}
+{{- if (eq .chezmoi.osRelease.id "debian" "ubuntu" "pop") }}
 echo "[-] Updating Apt packages [-]"
 sudo apt update
 {{ range .packages.linux.apts -}}
@@ -19,6 +20,7 @@ sudo apt install -y {{ . | quote }}
 {{ end -}}
 {{ range .extensions.linux.vscode }}
 $code --force --install-extension {{ . | quote }}
+{{ end }}
 {{ end }}
 
 {{- if eq .chezmoi.osRelease.id "pop" }}
