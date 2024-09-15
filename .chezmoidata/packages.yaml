@@ -24,17 +24,20 @@ packages:
       - com.bitwarden.desktop
       - com.discordapp.Discord
       - com.github.tchx84.Flatseal
+      - com.gitlab.davem.ClamTk
+      - com.makemkv.MakeMKV
       - com.synology.SynologyDrive
       - com.valvesoftware.Steam
       - com.visualstudio.code
       - dev.deedles.Trayscale
+      - io.missioncenter.MissionCenter
       - md.obsidian.Obsidian
       - org.flameshot.Flameshot
+      - org.gnome.Loupe
       - org.mozilla.Thunderbird
       - org.remmina.Remmina
       - org.videolan.VLC
       - tv.plex.PlexDesktop
-      - io.missioncenter.MissionCenter
   windows:
      powershell:
        - Posh-Git
