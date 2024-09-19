@@ -23,4 +23,42 @@
     refreshPeriod = "168h"
     exact = true
 
+[".themes/Dracula"]
+    type = "archive"
+    url = "https://github.com/dracula/gtk/archive/master.zip"
+    refreshPeriod = "168h"
+    stripComponents = 1
+    exact = true
+
+[".themes/Sweet-Dark-v40"]
+    type = "archive"
+    url = "https://github.com/EliverLara/Sweet/releases/latest/download/Sweet-Dark-v40.tar.xz"
+    refreshPeriod = "168h"
+    stripComponents = 1
+    exact = true
+
+[".icons/Flatery-Indigo"]
+    type = "archive"
+    url = "https://github.com/cbrnix/Flatery/archive/refs/tags/Flatery.zip"
+    refreshPeriod = "168h"
+    stripComponents = 2
+    exact = true
+    include = ["*/Flatery-Indigo/**"]
+
+[".icons/Flatery-Indigo-Dark"]
+    type = "archive"
+    url = "https://github.com/cbrnix/Flatery/archive/refs/tags/Flatery.zip"
+    refreshPeriod = "168h"
+    stripComponents = 2
+    exact = true
+    include = ["*/Flatery-Indigo-Dark/**"]
+
+[".icons/McMojave-cursors"]
+    type = "archive"
+    url = "https://github.com/vinceliuice/McMojave-cursors/archive/refs/heads/master.zip"
+    refreshPeriod = "168h"
+    stripComponents = 2
+    exact = true
+    include = ["*/dist/**"]
+
 {{- end }}
