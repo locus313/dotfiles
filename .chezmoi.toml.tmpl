@@ -1,8 +1,8 @@
-{{ $email := promptStringOnce . "email" "Git email address for the author/committer" }}
-{{ $name := promptStringOnce . "name" "Git username for the author/committer" }}
-{{ $pmode := promptBoolOnce . "pmode" "Use pmode" }}
-{{ $oagmode := promptBoolOnce . "oagmode" "Use oagmode" }}
-{{ $ptxmode := promptBoolOnce . "ptxmode" "Use ptxmode" }}
+{{ $email := promptStringOnce . "email" "Git email address for the author/committer" -}}
+{{ $name := promptStringOnce . "name" "Git username for the author/committer" -}}
+{{ $pmode := promptBoolOnce . "pmode" "Use pmode" -}}
+{{ $oagmode := promptBoolOnce . "oagmode" "Use oagmode" -}}
+{{ $ptxmode := promptBoolOnce . "ptxmode" "Use ptxmode" -}}
 
 {{- $wsl := (and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft")) -}}
 
