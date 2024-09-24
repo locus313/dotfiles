@@ -21,9 +21,8 @@ sudo apt install -y {{ . | quote }}
 {{ range .extensions.linux.vscode }}
 {{- if eq .chezmoi.osRelease.id "pop" }}
 $code --force --install-extension {{ . | quote }}
-{{ else -}}
-code --force --install-extension {{ . | quote }}
 {{ end -}}
+code --force --install-extension {{ . | quote }}
 {{ end }}
 {{ end }}
 
