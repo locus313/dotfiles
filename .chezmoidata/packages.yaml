@@ -20,6 +20,7 @@ packages:
       - jq
       - ncdu
       - direnv
+      - awscli
     flatpak:
       - com.bitwarden.desktop
       - com.discordapp.Discord
