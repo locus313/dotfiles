@@ -18,12 +18,11 @@ sudo apt update
 sudo apt install -y {{ . | quote }}
 {{ end -}}
 {{ end -}}
-{{ range .extensions.linux.vscode }}
 {{- if eq .chezmoi.osRelease.id "pop" }}
+{{ range .extensions.linux.vscode }}
 $code --force --install-extension {{ . | quote }}
-{{ end -}}
-code --force --install-extension {{ . | quote }}
 {{ end }}
+{{ end -}}
 {{ end }}
 
 {{- if eq .chezmoi.osRelease.id "pop" }}
