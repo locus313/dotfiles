@@ -66,6 +66,17 @@ packages:
           - Microsoft.Graph
 extensions:
   darwin:
+    vscode:
+      - mhutchie.git-graph
+      - arturbelico.code-sum-up
+      - mkhl.direnv
+      - eamodio.gitlens
+      - hashicorp.terraform
+      - GitHub.copilot
+      - timonwong.shellcheck
+      - emmanuelbeziat.vscode-great-icons
+      - redhat.vscode-xml
+      - redhat.vscode-yaml
   linux:
     vscode:
       - mhutchie.git-graph
