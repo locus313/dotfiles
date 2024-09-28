@@ -25,10 +25,12 @@ $code --force --install-extension {{ . | quote }}
 {{ end -}}
 {{ end }}
 
+{{- if eq .chezmoi.os "linux" }}
 {{- if eq .chezmoi.osRelease.id "pop" }}
 {{ range .packages.linux.flatpak -}}
 flatpak install -y {{ . | quote }}
 {{ end -}}
+{{ end }}
 {{ end }}
 
 {{- if eq .chezmoi.os "darwin" }}
