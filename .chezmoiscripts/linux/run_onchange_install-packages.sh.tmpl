@@ -1,4 +1,4 @@
-{{ if (eq .chezmoi.os "linux" "darwin") -}}
+{{ if eq .chezmoi.os "linux" -}}
 #!/bin/sh
 
 code="flatpak run com.visualstudio.code"
@@ -32,14 +32,4 @@ flatpak install -y {{ . | quote }}
 {{ end -}}
 {{ end }}
 {{ end }}
-
-{{- if eq .chezmoi.os "darwin" }}
-echo "[-] Updating brews [-]"
-{{ range .packages.darwin.brews -}}
-brew install  {{ . | quote }}
-{{ end -}}
-{{ range .extensions.darwin.vscode }}
-code --force --install-extension {{ . | quote }}
-{{ end }}
-{{ end -}}
 {{ end -}}
