@@ -47,10 +47,12 @@ alias privileges="/Applications/Privileges.app/Contents/Resources/PrivilegesCLI"
 alias sudo="privileges --add 2>/dev/null;sudo"
 {{- end }}
 
+{{ if (and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "pop")) }}
 # vscode
 function code() {
   (flatpak run com.visualstudio.code $*)
 }
+{{- end }}
 
 # network utilities
 function pubip {
