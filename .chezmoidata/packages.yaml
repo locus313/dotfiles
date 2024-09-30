@@ -3,6 +3,7 @@ packages:
     brews:
       - git
       - curl
+      - jandedobbeleer/oh-my-posh/oh-my-posh
   linux:
     dnfs:
       - git
