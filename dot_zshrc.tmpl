@@ -1,3 +1,8 @@
 {{- if eq .chezmoi.os "darwin" }}
 eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes//night-owl.omp.json)"
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
 {{- end }}
