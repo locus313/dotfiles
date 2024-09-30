@@ -4,6 +4,7 @@ packages:
       - git
       - curl
       - jandedobbeleer/oh-my-posh/oh-my-posh
+      - obsidian
   linux:
     dnfs:
       - git
