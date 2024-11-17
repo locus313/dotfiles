@@ -55,6 +55,7 @@ packages:
        - Microsoft.VisualStudioCode
        - twpayne.chezmoi
        - Obsidian.Obsidian
+       - OpenWhisperSystems.Signal
      msstore:
      pmode:
         winget:
