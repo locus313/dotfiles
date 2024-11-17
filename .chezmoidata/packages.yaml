@@ -59,6 +59,8 @@ packages:
      pmode:
         winget:
           - Bitwarden.CLI
+          - Discord.Discord
+          - Valve.Steam
      ptxmode:
         winget:
           - 1password-cli
