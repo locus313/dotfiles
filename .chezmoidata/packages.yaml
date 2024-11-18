@@ -62,6 +62,7 @@ packages:
           - Bitwarden.CLI
           - Discord.Discord
           - Valve.Steam
+          - RoyalApps.RoyalTS.V7
      ptxmode:
         winget:
           - 1password-cli
