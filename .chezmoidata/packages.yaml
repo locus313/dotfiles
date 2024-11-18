@@ -64,6 +64,7 @@ packages:
           - Valve.Steam
           - RoyalApps.RoyalTS.V7
           - GuinpinSoft.MakeMKV
+          - Plex.Plex
      ptxmode:
         winget:
           - 1password-cli
