@@ -63,6 +63,7 @@ packages:
           - Discord.Discord
           - Valve.Steam
           - RoyalApps.RoyalTS.V7
+          - GuinpinSoft.MakeMKV
      ptxmode:
         winget:
           - 1password-cli
