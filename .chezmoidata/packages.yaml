@@ -73,6 +73,7 @@ packages:
         winget:
           - Bitwarden.CLI
           - Microsoft.Graph
+          - TablePlus.TablePlus
 extensions:
   darwin:
     vscode:
