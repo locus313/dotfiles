@@ -104,3 +104,7 @@ extensions:
       - ms-vscode-remote.remote-wsl
       - mhutchie.git-graph
       - arturbelico.code-sum-up
+      - ClemensPeters.format-json
+      - redhat.vscode-xml
+      - GitHub.copilot
+      - GitHub.copilot-chat
