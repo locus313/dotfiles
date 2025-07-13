@@ -13,5 +13,7 @@ if (!(Get-Command pwsh -errorAction SilentlyContinue))
   winget install --source winget --accept-package-agreements Microsoft.PowerShell
 }
 
-refreshenv | Out-Null
+$env:PATH = [System.Environment]::GetEnvironmentVariable("PATH","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH","User")
+
 chezmoi init --apply locus313
+Write-Host "If new commands are not found, please restart your PowerShell session."
