@@ -62,13 +62,14 @@ packages:
           - Bitwarden.CLI
           - Discord.Discord
           - Valve.Steam
-          - RoyalApps.RoyalTS.V7
+          - xpipe-io.xpipe
           - GuinpinSoft.MakeMKV
           - Plex.Plex
      ptxmode:
         winget:
           - 1password-cli
           - Microsoft.AzureCLI
+          - xpipe-io.xpipe
      oagmode:
         winget:
           - Bitwarden.CLI
