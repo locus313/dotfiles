@@ -1,6 +1,79 @@
 {{- if eq .chezmoi.os "windows" -}}
 # network utilities
-function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
+function Get-PubIP {
+    param(
+        [switch]$All,
+        [int]$TimeoutSeconds = 5
+    )
+    
+    $sources = @(
+        @{ Name = "ifconfig.me"; Url = "http://ifconfig.me/ip" },
+        @{ Name = "ipinfo.io"; Url = "http://ipinfo.io/ip" },
+        @{ Name = "icanhazip.com"; Url = "http://icanhazip.com" },
+        @{ Name = "ident.me"; Url = "http://ident.me" },
+        @{ Name = "httpbin.org"; Url = "http://httpbin.org/ip" }
+    )
+    
+    if ($All) {
+        # Check all sources and return results
+        $results = @()
+        foreach ($source in $sources) {
+            try {
+                Write-Host "Checking $($source.Name)..." -ForegroundColor Yellow
+                $response = Invoke-WebRequest -Uri $source.Url -TimeoutSec $TimeoutSeconds -UseBasicParsing
+                $ip = $response.Content.Trim()
+                
+                # Handle httpbin.org JSON response
+                if ($source.Name -eq "httpbin.org") {
+                    $jsonResponse = $response.Content | ConvertFrom-Json
+                    $ip = $jsonResponse.origin
+                }
+                
+                $results += [PSCustomObject]@{
+                    Source = $source.Name
+                    IP = $ip
+                    Status = "Success"
+                }
+                Write-Host "✓ $($source.Name): $ip" -ForegroundColor Green
+            }
+            catch {
+                $results += [PSCustomObject]@{
+                    Source = $source.Name
+                    IP = $null
+                    Status = "Failed: $($_.Exception.Message)"
+                }
+                Write-Host "✗ $($source.Name): Failed" -ForegroundColor Red
+            }
+        }
+        return $results
+    }
+    else {
+        # Try sources one by one until one succeeds
+        foreach ($source in $sources) {
+            try {
+                Write-Verbose "Trying $($source.Name)..."
+                $response = Invoke-WebRequest -Uri $source.Url -TimeoutSec $TimeoutSeconds -UseBasicParsing
+                $ip = $response.Content.Trim()
+                
+                # Handle httpbin.org JSON response
+                if ($source.Name -eq "httpbin.org") {
+                    $jsonResponse = $response.Content | ConvertFrom-Json
+                    $ip = $jsonResponse.origin
+                }
+                
+                Write-Verbose "Success: Got IP $ip from $($source.Name)"
+                return $ip
+            }
+            catch {
+                Write-Verbose "Failed to get IP from $($source.Name): $($_.Exception.Message)"
+                continue
+            }
+        }
+        
+        # If all sources fail
+        throw "Unable to determine public IP address from any source"
+    }
+}
 
 # system utilities
 
