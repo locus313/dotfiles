@@ -74,6 +74,7 @@ packages:
           - Amazon.AWSCLI
           - Amazon.SessionManagerPlugin
           - TablePlus.TablePlus
+          - TheDocumentFoundation.LibreOffice
      oagmode:
         winget:
           - Bitwarden.CLI
