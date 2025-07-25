@@ -75,6 +75,7 @@ packages:
           - Amazon.SessionManagerPlugin
           - TablePlus.TablePlus
           - TheDocumentFoundation.LibreOffice
+          - Postman.Postman
      oagmode:
         winget:
           - Bitwarden.CLI
