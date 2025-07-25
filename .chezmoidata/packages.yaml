@@ -71,6 +71,9 @@ packages:
           - 1password-cli
           - Microsoft.AzureCLI
           - xpipe-io.xpipe
+          - Amazon.AWSCLI
+          - Amazon.SessionManagerPlugin
+          - TablePlus.TablePlus
      oagmode:
         winget:
           - Bitwarden.CLI
