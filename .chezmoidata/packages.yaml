@@ -57,6 +57,7 @@ packages:
        - Obsidian.Obsidian
        - OpenWhisperSystems.Signal
        - Greenshot.Greenshot
+       - direnv.direnv
      msstore:
      pmode:
         winget:
