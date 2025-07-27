@@ -115,3 +115,4 @@ extensions:
       - redhat.vscode-xml
       - GitHub.copilot
       - GitHub.copilot-chat
+      - codezombiech.gitignore
