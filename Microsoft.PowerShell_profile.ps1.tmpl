@@ -51,6 +51,9 @@ Register-ArgumentCompleter -Native -CommandName az -ScriptBlock {
 # Utils
 . "$env:USERPROFILE/Scripts/PowerShell/utils.ps1"
 
+# Set XDG Config Home
+$env:XDG_CONFIG_HOME = "$env:USERPROFILE\.config"
+
 # Direnv hook
 if (Test-Path "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\direnv.direnv_Microsoft.Winget.Source_8wekyb3d8bbwe\direnv.exe") {
     $direnv = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\direnv.direnv_Microsoft.Winget.Source_8wekyb3d8bbwe\direnv.exe"
