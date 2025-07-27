@@ -58,6 +58,7 @@ packages:
        - OpenWhisperSystems.Signal
        - Greenshot.Greenshot
        - direnv.direnv
+       - Warrensbox.TerraformSwitcher
      msstore:
      pmode:
         winget:
