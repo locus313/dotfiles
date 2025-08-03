@@ -39,15 +39,18 @@ Register-ArgumentCompleter -Native -CommandName az -ScriptBlock {
 # Chezmoi Wrapper
 . "$env:USERPROFILE/Scripts/PowerShell/chezmoi.ps1"
 
-# PSReadLine config
-. "$env:USERPROFILE/Scripts/PowerShell/psreadline.ps1"
-
 # Githelpers
 . "$env:USERPROFILE/Scripts/PowerShell/githelpers.ps1"
 
 # Linux like commands for Windows
 . "$env:USERPROFILE/Scripts/PowerShell/linuxlike.ps1"
 
+# PSReadLine config
+. "$env:USERPROFILE/Scripts/PowerShell/psreadline.ps1"
+{{- if eq .pmode true -}}
+# Rename helpers
+. "$env:USERPROFILE/Scripts/PowerShell/rename.ps1"
+{{- end }}
 # Utils
 . "$env:USERPROFILE/Scripts/PowerShell/utils.ps1"
 

@@ -1,0 +1,12 @@
+{{- if eq .chezmoi.os "windows" -}}
+{{- if eq .pmode true -}}
+function Rename-PlayOnCloudRecordings {
+    Get-ChildItem -Path "$env:USERPROFILE\Videos\PlayOn Cloud Recordings" -Filter "*.mp4" | ForEach-Object {
+        if ($_.Name -match '^\d+_') {
+            $newName = $_.Name -replace '^\d+_', ''
+            Rename-Item -Path $_.FullName -NewName $newName
+        }
+    }
+}
+{{- end }}
+{{- end }}
