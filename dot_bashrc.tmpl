@@ -112,6 +112,9 @@ if ! shopt -oq posix; then
   fi
 fi
 
+{{- if eq .oagmode true }}
+export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
+{{- end }}
 {{- if (or (eq .ptxmode true) (eq .oagmode true)) }}
 # aws-vault backend
 export AWS_VAULT_BACKEND=file

@@ -5,4 +5,7 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+{{- if eq .oagmode true }}
+export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
+{{- end }}
 {{- end }}

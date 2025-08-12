@@ -7,7 +7,7 @@ Host github.com
   {{- else if eq .ptxmode true }}
   IdentityFile ~/.ssh/ptx_id_rsa
   {{- else if eq .oagmode true }}
-  IdentityFile ~/.ssh/id_rsa
+  IdentityAgent ~/.bitwarden-ssh-agent.sock
   {{- end }}
 
   {{- if eq .ptxmode true }}
