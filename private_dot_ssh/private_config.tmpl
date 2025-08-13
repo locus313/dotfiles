@@ -2,9 +2,7 @@ Host github.com
   User git
   Port 22
   PreferredAuthentications publickey
-  {{- if eq .pmode true }}
-  IdentityFile ~/.ssh/id_rsa
-  {{- else if eq .oagmode true }}
+  {{- if (or (eq .pmode true) (eq .oagmode true)) }}
   IdentityAgent ~/.bitwarden-ssh-agent.sock
   {{- end }}
 
