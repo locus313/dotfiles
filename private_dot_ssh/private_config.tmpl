@@ -2,8 +2,10 @@ Host github.com
   User git
   Port 22
   PreferredAuthentications publickey
+  {{- if eq .chezmoi.os "darwin" }}
   {{- if (or (eq .pmode true) (eq .oagmode true)) }}
   IdentityAgent ~/.bitwarden-ssh-agent.sock
+  {{- end }}
   {{- end }}
 
   {{- if eq .ptxmode true }}
