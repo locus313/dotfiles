@@ -115,7 +115,7 @@ fi
 {{- if eq .oagmode true }}
 export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
 {{- end }}
-{{- if (or (eq .ptxmode true) (eq .oagmode true)) }}
+{{- if eq .oagmode true }}
 # aws-vault backend
 export AWS_VAULT_BACKEND=file
 export AWS_VAULT_FILE_PASSPHRASE={{ (bitwardenFields "item" "chezmoi").awsvault.value | quote }}
