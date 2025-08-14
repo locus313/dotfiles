@@ -130,10 +130,8 @@ export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
 export AWS_VAULT_BACKEND=file
 export AWS_VAULT_FILE_PASSPHRASE={{ (bitwardenFields "item" "chezmoi").awsvault.value | quote }}
 {{- end }}
-{{ if not .wsl }}
 # oh-my-posh
 eval "$(oh-my-posh init bash --config ~/.poshthemes/night-owl.omp.json)"
-{{- end }}
 # direnv
 eval "$(direnv hook bash)"
 
