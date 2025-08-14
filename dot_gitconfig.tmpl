@@ -10,3 +10,7 @@
     filemode = false
     sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 {{- end }}
+{{- if .wsl }}
+[core]
+    sshCommand = /mnt/c/WINDOWS/System32/OpenSSH/ssh.exe
+{{- end }}
