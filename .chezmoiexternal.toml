@@ -11,6 +11,12 @@
     executable = true
     refreshPeriod = "168h"
 
+[".local/bin/direnv"]
+    type = "file"
+    url = "https://github.com/direnv/direnv/releases/latest/download/direnv-{{ .chezmoi.os }}-{{ .chezmoi.arch }}"
+    executable = true
+    refreshPeriod = "168h"
+
 [".local/bin/aws-vault"]
     type = "file"
     url = "https://github.com/99designs/aws-vault/releases/latest/download/aws-vault-{{ .chezmoi.os }}-{{ .chezmoi.arch }}"
