@@ -10,7 +10,12 @@ alias ga='git add .'
 alias gc='git commit'
 alias gp='git push'
 
-{{ if (or (eq .pmode true) (eq .oagmode true)) }}
+{{- if (and (eq .ptxmode true) (eq .wsl true)) }}
+alias ssh='ssh.exe'
+alias ssh-add='ssh-add.exe'
+{{- end }}
+
+{{- if (or (eq .pmode true) (eq .oagmode true)) }}
 # bitwarden 
 function bwu {
     BW_STATUS=$(bw status | jq -r .status)
@@ -33,13 +38,15 @@ function bwu {
     esac
     bw sync
 }
+{{- end }}
 
 # chezmoi
 function cz() (
-  export BW_SESSION=$(bw unlock --raw) 
+  {{ if (or (eq .pmode true) (eq .oagmode true)) }}
+  export BW_SESSION=$(bw unlock --raw)
+  {{ end }}
   command chezmoi "$@"
 )
-{{ end }}
 
 {{ if (and (eq .chezmoi.os "darwin") (eq .oagmode true)) }}
 # macos privileges
