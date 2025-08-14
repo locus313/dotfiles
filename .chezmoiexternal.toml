@@ -13,7 +13,7 @@
 
 [".local/bin/direnv"]
     type = "file"
-    url = "https://github.com/direnv/direnv/releases/latest/download/direnv-{{ .chezmoi.os }}-{{ .chezmoi.arch }}"
+    url = "https://github.com/direnv/direnv/releases/latest/download/direnv.{{ .chezmoi.os }}-{{ .chezmoi.arch }}"
     executable = true
     refreshPeriod = "168h"
 
