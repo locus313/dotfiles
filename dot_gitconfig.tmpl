@@ -4,13 +4,15 @@
 {{- if eq .chezmoi.os "windows" }}
 {{- if eq .oagmode true }}
 [http]
-    sslcainfo = ~/AppData/Roaming/custom-ca-bundle.pem
+	sslcainfo = ~/AppData/Roaming/custom-ca-bundle.pem
 {{- end }}
 [core]
     filemode = false
+    autocrlf = true
     sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 {{- end }}
 {{- if .wsl }}
 [core]
-    sshCommand = /mnt/c/WINDOWS/System32/OpenSSH/ssh.exe
+	autocrlf = input
+	sshCommand = /mnt/c/WINDOWS/System32/OpenSSH/ssh.exe
 {{- end }}
