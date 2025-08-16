@@ -58,9 +58,9 @@ Register-ArgumentCompleter -Native -CommandName az -ScriptBlock {
 $env:XDG_CONFIG_HOME = "$env:USERPROFILE\.config"
 
 # Direnv hook
-if (Test-Path "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\direnv.direnv_Microsoft.Winget.Source_8wekyb3d8bbwe\direnv.exe") {
-    $direnv = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\direnv.direnv_Microsoft.Winget.Source_8wekyb3d8bbwe\direnv.exe"
-    Invoke-Expression (& $direnv hook pwsh | Out-String)
-}
+#if (Test-Path "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\direnv.direnv_Microsoft.Winget.Source_8wekyb3d8bbwe\direnv.exe") {
+#    $direnv = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\direnv.direnv_Microsoft.Winget.Source_8wekyb3d8bbwe\direnv.exe"
+#    Invoke-Expression (& $direnv hook pwsh | Out-String)
+#}
 
 {{- end }}
