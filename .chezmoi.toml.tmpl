@@ -24,8 +24,9 @@
     args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager-op.ps1"]
     {{ end }}
 {{- else }}
-    {{ if .ptxmode -}}
+    {{ if .ptxmode }}
     command = ".local/share/chezmoi/.chezmoihooks/install-password-manager-op.sh"
+    {{ end }}
     {{ else }}
     command = ".local/share/chezmoi/.chezmoihooks/install-password-manager.sh"
     {{ end }}
