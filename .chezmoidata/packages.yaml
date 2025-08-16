@@ -8,6 +8,7 @@ packages:
       - direnv
   linux:
     dnfs:
+      - epel-release
       - git
       - curl
       - bash
