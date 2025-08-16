@@ -10,7 +10,7 @@ alias ga='git add .'
 alias gc='git commit'
 alias gp='git push'
 
-{{- if (and (eq .ptxmode true) (eq .wsl true)) }}
+{{- if eq .wsl true }}
 alias ssh='ssh.exe'
 alias ssh-add='ssh-add.exe'
 {{- end }}
