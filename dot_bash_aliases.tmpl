@@ -73,4 +73,7 @@ function reload-profile {
 
 alias rp='reload-profile'
 
+{{- if (and (eq .ptxmode true) (eq .wsl true)) }}
+alias gam='~/bin/gam7/gam'
+{{- end }}
 {{- end }}
