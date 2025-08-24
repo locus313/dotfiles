@@ -1,85 +1,132 @@
 {{- if (eq .chezmoi.os "linux" "darwin") }}
+# Modern command replacements
 # eza aliases (modern ls replacement)
-alias ll='eza -la --group-directories-first --icons'
-alias la='eza -la --group-directories-first --icons'
-alias l='eza -1 --group-directories-first --icons'
-alias ls='eza --group-directories-first --icons'
-alias lt='eza -T --group-directories-first --icons'  # tree view
-alias lg='eza -la --git --group-directories-first --icons'  # show git status
+if command -v eza >/dev/null 2>&1; then
+    alias ll='eza -la --group-directories-first --icons'
+    alias la='eza -la --group-directories-first --icons'
+    alias l='eza -1 --group-directories-first --icons'
+    alias ls='eza --group-directories-first --icons'
+    alias lt='eza -T --group-directories-first --icons'  # tree view
+    alias lg='eza -la --git --group-directories-first --icons'  # show git status
+else
+    # Fallback to traditional ls with colors
+    alias ll='ls -la --color=auto'
+    alias la='ls -la --color=auto'
+    alias l='ls -1 --color=auto'
+    alias ls='ls --color=auto'
+fi
 
-# cat alias to bat (syntax highlighting)
-alias cat='bat'
+# bat alias for cat (syntax highlighting)
+if command -v bat >/dev/null 2>&1; then
+    alias cat='bat'
+fi
 
-# git shortcuts
+# Git shortcuts
 alias gs='git status'
 alias ga='git add .'
 alias gc='git commit'
 alias gp='git push'
 
 {{- if eq .wsl true }}
+# WSL-specific aliases for Windows SSH
 alias ssh='ssh.exe'
 alias ssh-add='ssh-add.exe'
 {{- end }}
 
 {{- if (or (eq .pmode true) (eq .oagmode true)) }}
-# bitwarden 
+# Bitwarden helper function
 function bwu {
+    if ! command -v bw >/dev/null 2>&1; then
+        echo "Error: Bitwarden CLI (bw) not found. Please install it first."
+        return 1
+    fi
+
+    if ! command -v jq >/dev/null 2>&1; then
+        echo "Error: jq not found. Please install it for JSON parsing."
+        return 1
+    fi
+
     BW_STATUS=$(bw status | jq -r .status)
     case "$BW_STATUS" in
     "unauthenticated")
-        echo "Logging into BitWarden"
+        echo "Logging into Bitwarden..."
         export BW_SESSION=$(bw login --raw)
         ;;
     "locked")
-        echo "Unlocking Vault"
+        echo "Unlocking Vault..."
         export BW_SESSION=$(bw unlock --raw)
         ;;
     "unlocked")
-        echo "Vault is unlocked"
+        echo "Vault is already unlocked"
         ;;
     *)
-        echo "Unknown Login Status: $BW_STATUS"
+        echo "Unknown login status: $BW_STATUS"
         return 1
         ;;
     esac
+    
+    echo "Syncing vault..."
     bw sync
 }
 {{- end }}
 
-# chezmoi
+# Chezmoi wrapper function
 function cz() (
-  {{ if (or (eq .pmode true) (eq .oagmode true)) }}
-  export BW_SESSION=$(bw unlock --raw)
-  {{ end }}
-  command chezmoi "$@"
+{{- if (or (eq .pmode true) (eq .oagmode true)) }}
+    if ! command -v bw >/dev/null 2>&1; then
+        echo "Warning: Bitwarden CLI not found, running chezmoi without authentication"
+        command chezmoi "$@"
+        return
+    fi
+    export BW_SESSION=$(bw unlock --raw)
+{{- end }}
+    command chezmoi "$@"
 )
 
-{{ if (and (eq .chezmoi.os "darwin") (eq .oagmode true)) }}
-# macos privileges
-alias privileges="/Applications/Privileges.app/Contents/Resources/PrivilegesCLI"
-alias sudo="privileges --add 2>/dev/null;sudo"
+{{- if (and (eq .chezmoi.os "darwin") (eq .oagmode true)) }}
+# macOS Privileges.app integration
+if [ -f "/Applications/Privileges.app/Contents/Resources/PrivilegesCLI" ]; then
+    alias privileges="/Applications/Privileges.app/Contents/Resources/PrivilegesCLI"
+    alias sudo="privileges --add 2>/dev/null; sudo"
+fi
 {{- end }}
 
-{{ if (and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "pop")) }}
-# vscode
+{{- if (and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "pop")) }}
+# VS Code via Flatpak on Pop!_OS
 function code() {
-  (flatpak run com.visualstudio.code $*)
+    flatpak run com.visualstudio.code "$@"
 }
 {{- end }}
 
-# network utilities
+# Network utilities
 function pubip {
-    curl -s http://ifconfig.me/ip -w "\n"
+    if command -v curl >/dev/null 2>&1; then
+        curl -s http://ifconfig.me/ip -w "\n"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -qO- http://ifconfig.me/ip && echo
+    else
+        echo "Error: Neither curl nor wget is available"
+        return 1
+    fi
 }
 
-# system utilities
+# System utilities
 function reload-profile {
-    . ~/.bashrc
+    if [ -f ~/.bashrc ]; then
+        source ~/.bashrc
+        echo "Bash profile reloaded"
+    else
+        echo "Error: ~/.bashrc not found"
+        return 1
+    fi
 }
 
 alias rp='reload-profile'
 
 {{- if (and (eq .ptxmode true) (eq .wsl true)) }}
-alias gam='~/bin/gam7/gam'
+# GAM (Google Admin Management) alias for ptxmode in WSL
+if [ -f ~/bin/gam7/gam ]; then
+    alias gam='~/bin/gam7/gam'
+fi
 {{- end }}
 {{- end }}

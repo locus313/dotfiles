@@ -1,10 +1,56 @@
 {{- if eq .chezmoi.os "windows" -}}
-# Git Shortcuts
-function gs { git status }
+# Git shortcut functions for improved workflow
+function gs { 
+    [CmdletBinding()]
+    param()
+    git status 
+}
 
-function ga { git add . }
+function ga { 
+    [CmdletBinding()]
+    param(
+        [string[]]$Path = @(".")
+    )
+    git add @Path 
+}
 
-function gc { param($m) git commit -m "$m" }
+function gc { 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+    git commit -m $Message 
+}
 
-function gp { git push }
+function gp { 
+    [CmdletBinding()]
+    param(
+        [string]$Remote = "origin",
+        [string]$Branch
+    )
+    
+    if ($Branch) {
+        git push $Remote $Branch
+    } else {
+        git push
+    }
+}
+
+# Additional helpful git functions
+function gl {
+    [CmdletBinding()]
+    param([int]$Count = 10)
+    git log --oneline -n $Count
+}
+
+function gd {
+    [CmdletBinding()]
+    param([string[]]$Path)
+    if ($Path) {
+        git diff @Path
+    } else {
+        git diff
+    }
+}
 {{- end }}

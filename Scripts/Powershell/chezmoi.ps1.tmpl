@@ -1,11 +1,10 @@
 {{- if eq .chezmoi.os "windows" -}}
-{{- if (or (eq .pmode true) (eq .oagmode true)) -}}
+{{- if (or (eq .pmode true) (eq .oagmode true)) }}
 function cz {
     $env:BW_SESSION = $(bw unlock --raw) 
     chezmoi $args
 }
-{{- end }}
-{{- if eq .ptxmode true }}
+{{- else if eq .ptxmode true }}
 function cz {
     chezmoi $args
 }

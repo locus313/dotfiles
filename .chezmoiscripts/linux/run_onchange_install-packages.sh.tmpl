@@ -1,35 +1,58 @@
 {{ if eq .chezmoi.os "linux" -}}
 #!/bin/sh
 
-code="flatpak run com.visualstudio.code"
+set -e  # Exit on error
 
-echo "[-] Updating packages [-]"
+echo "[-] Starting package installation for Linux [-]"
 
-{{- if eq .chezmoi.os "linux" }}
 {{- if eq .chezmoi.osRelease.id "almalinux" }}
+echo "[-] Installing packages using DNF (AlmaLinux) [-]"
 {{ range .packages.linux.dnfs -}}
-sudo dnf install -y {{ . | quote }}
+if ! rpm -q {{ . | quote }} >/dev/null 2>&1; then
+    echo "Installing {{ . }}..."
+    sudo dnf install -y {{ . | quote }}
+else
+    echo "{{ . }} is already installed"
+fi
 {{ end -}}
-{{ end -}}
-{{- if (eq .chezmoi.osRelease.id "debian" "ubuntu" "pop") }}
-echo "[-] Updating Apt packages [-]"
-sudo apt update
-{{ range .packages.linux.apts -}}
-sudo apt install -y {{ . | quote }}
-{{ end -}}
-{{ end -}}
-{{- if eq .chezmoi.osRelease.id "pop" }}
-{{ range .extensions.linux.vscode }}
-$code --force --install-extension {{ . | quote }}
-{{ end }}
-{{ end -}}
-{{ end }}
+{{- end }}
 
-{{- if eq .chezmoi.os "linux" }}
-{{- if eq .chezmoi.osRelease.id "pop" }}
-{{ range .packages.linux.flatpak -}}
-flatpak install -y {{ . | quote }}
+{{- if (eq .chezmoi.osRelease.id "debian" "ubuntu" "pop") }}
+echo "[-] Updating package lists [-]"
+sudo apt update
+
+echo "[-] Installing packages using APT [-]"
+{{ range .packages.linux.apts -}}
+if ! dpkg -l {{ . | quote }} >/dev/null 2>&1; then
+    echo "Installing {{ . }}..."
+    sudo apt install -y {{ . | quote }}
+else
+    echo "{{ . }} is already installed"
+fi
 {{ end -}}
+{{- end }}
+
+{{- if eq .chezmoi.osRelease.id "pop" }}
+echo "[-] Installing Flatpak applications [-]"
+{{ range .packages.linux.flatpak -}}
+if ! flatpak list | grep -q {{ . | quote }}; then
+    echo "Installing {{ . }}..."
+    flatpak install -y {{ . | quote }}
+else
+    echo "{{ . }} is already installed"
+fi
+{{ end -}}
+
+echo "[-] Installing VS Code extensions [-]"
+{{ range .extensions.linux.vscode }}
+if ! flatpak run com.visualstudio.code --list-extensions | grep -q {{ . | quote }}; then
+    echo "Installing extension {{ . }}..."
+    flatpak run com.visualstudio.code --force --install-extension {{ . | quote }}
+else
+    echo "Extension {{ . }} is already installed"
+fi
 {{ end }}
-{{ end }}
+{{- end }}
+
+echo "[-] Package installation completed [-]"
 {{ end -}}

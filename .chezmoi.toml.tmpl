@@ -1,8 +1,8 @@
-{{ $email := promptStringOnce . "email" "Git email address for the author/committer" -}}
-{{ $name := promptStringOnce . "name" "Git username for the author/committer" -}}
-{{ $pmode := promptBoolOnce . "pmode" "Use pmode" -}}
-{{ $oagmode := promptBoolOnce . "oagmode" "Use oagmode" -}}
-{{ $ptxmode := promptBoolOnce . "ptxmode" "Use ptxmode" -}}
+{{- $email := promptStringOnce . "email" "Git email address for the author/committer" -}}
+{{- $name := promptStringOnce . "name" "Git username for the author/committer" -}}
+{{- $pmode := promptBoolOnce . "pmode" "Use pmode (Personal mode with Bitwarden)" -}}
+{{- $oagmode := promptBoolOnce . "oagmode" "Use oagmode (Enterprise mode with custom CA bundle and Bitwarden)" -}}
+{{- $ptxmode := promptBoolOnce . "ptxmode" "Use ptxmode (Corporate mode with 1Password)" -}}
 
 {{- $wsl := (and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft")) -}}
 
@@ -17,16 +17,15 @@
 [hooks.read-source-state.pre]
 {{- if eq .chezmoi.os "windows" }}
     command = "pwsh.exe"
-    {{ if (or ($pmode) ($oagmode)) -}}
+{{- if (or ($pmode) ($oagmode)) }}
     args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager-bw.ps1"]
-    {{ end }}
-    {{ if $ptxmode }}
+{{- else if $ptxmode }}
     args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager-op.ps1"]
-    {{ end }}
+{{- end }}
 {{- else }}
-    {{ if $ptxmode }}
+{{- if $ptxmode }}
     command = ".local/share/chezmoi/.chezmoihooks/install-password-manager-op.sh"
-    {{ else }}
+{{- else }}
     command = ".local/share/chezmoi/.chezmoihooks/install-password-manager.sh"
-    {{ end }}
+{{- end }}
 {{- end }}

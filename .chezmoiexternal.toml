@@ -1,10 +1,12 @@
 {{- if eq .chezmoi.os "linux" }}
+# Fonts
 [".fonts/CascadiaCode"]
-  type = "archive"
-  url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip"
-  refreshPeriod = "168h"
-  exact = true
+    type = "archive"
+    url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip"
+    refreshPeriod = "168h"
+    exact = true
 
+# Essential CLI tools
 [".local/bin/oh-my-posh"]
     type = "file"
     url = "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-{{ .chezmoi.os }}-{{ .chezmoi.arch }}"
@@ -23,12 +25,14 @@
     executable = true
     refreshPeriod = "168h"
 
+# WSL-specific tools
 [".local/bin/host-spawn"]
     type = "file"
     url = "https://github.com/1player/host-spawn/releases/latest/download/host-spawn-x86_64"
     executable = true
     refreshPeriod = "168h"
 
+# Modern ls replacement
 [".local/bin/eza"]
     type = "archive-file"
     url = "https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
@@ -36,6 +40,7 @@
     refreshPeriod = "168h"
     path = "./eza"
 
+# Themes and appearance
 [".poshthemes"]
     type = "archive"
     url = "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip"
@@ -56,6 +61,7 @@
     stripComponents = 1
     exact = true
 
+# Icons
 [".icons/Flatery-Indigo"]
     type = "archive"
     url = "https://github.com/cbrnix/Flatery/archive/refs/tags/Flatery.zip"
