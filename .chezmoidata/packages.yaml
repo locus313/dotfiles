@@ -13,6 +13,7 @@ packages:
       - curl
       - bash
       - zsh
+      - bat
       - unzip
       - jq
       - ncdu
@@ -22,6 +23,7 @@ packages:
       - curl 
       - bash 
       - zsh
+      - bat
       - unzip
       - jq
       - ncdu
