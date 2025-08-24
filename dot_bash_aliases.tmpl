@@ -1,8 +1,11 @@
 {{- if (eq .chezmoi.os "linux" "darwin") }}
-# ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+# eza aliases (modern ls replacement)
+alias ll='eza -la --group-directories-first --icons'
+alias la='eza -la --group-directories-first --icons'
+alias l='eza -1 --group-directories-first --icons'
+alias ls='eza --group-directories-first --icons'
+alias lt='eza -T --group-directories-first --icons'  # tree view
+alias lg='eza -la --git --group-directories-first --icons'  # show git status
 
 # cat alias to bat (syntax highlighting)
 alias cat='bat'
