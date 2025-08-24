@@ -55,22 +55,46 @@ During initial setup, you'll be prompted to select operational modes that contro
 
 ## Project Structure
 
-```
-├── Scripts/PowerShell/           # PowerShell helper scripts
-│   ├── chezmoi.ps1.tmpl         # Mode-aware chezmoi wrapper
-│   ├── githelpers.ps1.tmpl      # Git shortcuts and aliases
-│   └── ...
-├── .chezmoiscripts/             # Platform-specific setup scripts
-│   ├── linux/
-│   ├── macos/
-│   └── windows/
-├── .chezmoihooks/               # Password manager installation hooks
-├── dot_gitconfig.tmpl           # Git configuration template
-├── dot_bashrc.tmpl              # Bash configuration
-├── dot_zshrc.tmpl               # Zsh configuration
-├── Microsoft.PowerShell_profile.ps1.tmpl  # PowerShell profile
-└── private_dot_ssh/             # SSH configuration (private)
-```
+### Core Configuration Files
+
+| File | Target | Description |
+|------|--------|-------------|
+| [dot_gitconfig.tmpl](dot_gitconfig.tmpl) | `~/.gitconfig` | Git configuration with mode-aware settings and platform-specific SSH |
+| [dot_bashrc.tmpl](dot_bashrc.tmpl) | `~/.bashrc` | Bash shell configuration with oh-my-posh integration |
+| [dot_zshrc.tmpl](dot_zshrc.tmpl) | `~/.zshrc` | Zsh shell configuration with oh-my-posh theming |
+| [dot_bash_aliases.tmpl](dot_bash_aliases.tmpl) | `~/.bash_aliases` | Bash aliases and shortcuts |
+| [dot_profile.tmpl](dot_profile.tmpl) | `~/.profile` | Shell-agnostic profile configuration |
+| [dot_zprofile.tmpl](dot_zprofile.tmpl) | `~/.zprofile` | Zsh profile configuration |
+| [dot_tfswitch.toml.tmpl](dot_tfswitch.toml.tmpl) | `~/.tfswitch.toml` | Terraform version switching configuration |
+
+### PowerShell Configurations
+
+| File | Target | Description |
+|------|--------|-------------|
+| [Microsoft.PowerShell_profile.ps1.tmpl](Microsoft.PowerShell_profile.ps1.tmpl) | PowerShell profile | Main PowerShell profile with UTF-8 encoding and oh-my-posh |
+| [Documents/PowerShell/Microsoft.PowerShell_profile.ps1.tmpl](Documents/PowerShell/Microsoft.PowerShell_profile.ps1.tmpl) | `~/Documents/PowerShell/` | Alternative PowerShell profile location |
+
+### PowerShell Helper Scripts
+
+| File | Description |
+|------|-------------|
+| [Scripts/Powershell/chezmoi.ps1.tmpl](Scripts/Powershell/chezmoi.ps1.tmpl) | Mode-aware chezmoi wrapper with Bitwarden session handling |
+| [Scripts/Powershell/githelpers.ps1.tmpl](Scripts/Powershell/githelpers.ps1.tmpl) | Git shortcuts and aliases (`gs`, `ga`, `gc`, `gp`) |
+| [Scripts/Powershell/linuxlike.ps1.tmpl](Scripts/Powershell/linuxlike.ps1.tmpl) | Linux-like command aliases for PowerShell |
+| [Scripts/Powershell/psreadline.ps1.tmpl](Scripts/Powershell/psreadline.ps1.tmpl) | PSReadLine configuration for enhanced editing |
+| [Scripts/Powershell/rename.ps1.tmpl](Scripts/Powershell/rename.ps1.tmpl) | File renaming utilities |
+| [Scripts/Powershell/utils.ps1.tmpl](Scripts/Powershell/utils.ps1.tmpl) | General PowerShell utility functions |
+
+### System Configuration
+
+| Directory/File | Description |
+|----------------|-------------|
+| `.chezmoiscripts/` | Platform-specific setup scripts for automated installation |
+| `.chezmoihooks/` | Password manager installation hooks |
+| `private_dot_ssh/` | SSH configuration (private, not tracked in git) |
+| `AppData/Roaming/` | Windows application data configurations |
+| `.chezmoi.toml.tmpl` | Chezmoi configuration with mode prompts |
+| `.chezmoiexternal.toml` | External tool management (oh-my-posh, direnv, aws-vault) |
 
 ## Key Features
 
