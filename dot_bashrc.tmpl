@@ -134,5 +134,7 @@ export AWS_VAULT_FILE_PASSPHRASE={{ (bitwardenFields "item" "chezmoi").awsvault.
 eval "$(oh-my-posh init bash --config ~/.poshthemes/night-owl.omp.json)"
 # direnv
 eval "$(direnv hook bash)"
+# zoxide
+eval "$(zoxide init bash)"
 
 {{- end }}

@@ -14,6 +14,7 @@ packages:
       - bash
       - zsh
       - bat
+      - zoxide
       - unzip
       - jq
       - ncdu
@@ -24,6 +25,7 @@ packages:
       - bash 
       - zsh
       - bat
+      - zoxide
       - unzip
       - jq
       - ncdu
