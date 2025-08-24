@@ -29,6 +29,13 @@
     executable = true
     refreshPeriod = "168h"
 
+[".local/bin/eza"]
+    type = "archive-file"
+    url = "https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
+    executable = true
+    refreshPeriod = "168h"
+    path = "./eza"
+
 [".poshthemes"]
     type = "archive"
     url = "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip"
