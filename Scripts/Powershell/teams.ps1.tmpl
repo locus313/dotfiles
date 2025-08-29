@@ -1,0 +1,39 @@
+{{- if eq .chezmoi.os "windows" -}}
+# Microsoft Teams and Skype for Business Online Management Functions
+
+function Get-TeamsUserVoiceInfo {
+    <#
+    .SYNOPSIS
+    Get Teams voice configuration information for a user.
+    
+    .DESCRIPTION
+    Retrieves key voice-related properties for a Teams user including display name,
+    enterprise voice status, hosted voicemail, voice routing policy, and line URI.
+    
+    .PARAMETER Identity
+    The user's UPN, SIP address, or object ID.
+    
+    .EXAMPLE
+    Get-TeamsUserVoiceInfo -Identity "user@domain.com"
+    
+    .EXAMPLE
+    Get-TeamsUserVoiceInfo "user@domain.com"
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string]$Identity
+    )
+    
+    try {
+        Get-CsOnlineUser -Identity $Identity | Select-Object DisplayName, EnterpriseVoiceEnabled, HostedVoiceMail, OnlineVoiceRoutingPolicy, LineUri
+    }
+    catch {
+        Write-Error "Failed to retrieve Teams user voice information for '$Identity': $($_.Exception.Message)"
+    }
+}
+
+# Create alias for shorter command
+Set-Alias -Name gtuvi -Value Get-TeamsUserVoiceInfo
+
+{{- end }}
