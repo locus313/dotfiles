@@ -1,6 +1,41 @@
 {{- if eq .chezmoi.os "windows" -}}
 # Microsoft Teams and Skype for Business Online Management Functions
 
+function Test-TeamsAuthentication {
+    <#
+    .SYNOPSIS
+    Check if authenticated to Microsoft Teams and connect if needed.
+    
+    .DESCRIPTION
+    Verifies if there is an active Microsoft Teams PowerShell session.
+    If not authenticated, prompts to connect using Connect-MicrosoftTeams.
+    
+    .EXAMPLE
+    Test-TeamsAuthentication
+    #>
+    [CmdletBinding()]
+    param()
+    
+    try {
+        # Try to get tenant information to test authentication
+        $tenantInfo = Get-CsTenant -ErrorAction Stop
+        Write-Verbose "Already authenticated to Microsoft Teams tenant: $($tenantInfo.DisplayName)"
+        return $true
+    }
+    catch {
+        Write-Warning "Not authenticated to Microsoft Teams. Attempting to connect..."
+        try {
+            Connect-MicrosoftTeams
+            Write-Host "Successfully connected to Microsoft Teams" -ForegroundColor Green
+            return $true
+        }
+        catch {
+            Write-Error "Failed to connect to Microsoft Teams: $($_.Exception.Message)"
+            return $false
+        }
+    }
+}
+
 function Get-TeamsUserVoiceInfo {
     <#
     .SYNOPSIS
@@ -24,6 +59,11 @@ function Get-TeamsUserVoiceInfo {
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Identity
     )
+    
+    # Check authentication before proceeding
+    if (-not (Test-TeamsAuthentication)) {
+        return
+    }
     
     try {
         Get-CsOnlineUser -Identity $Identity | Select-Object DisplayName, EnterpriseVoiceEnabled, HostedVoiceMail, OnlineVoiceRoutingPolicy, LineUri
@@ -78,6 +118,11 @@ function Set-TeamsUserVoiceConfig {
         [Parameter(Position = 3)]
         [string]$PhoneNumberType = "DirectRouting"
     )
+    
+    # Check authentication before proceeding
+    if (-not (Test-TeamsAuthentication)) {
+        return
+    }
     
     try {
         Write-Host "Configuring Teams voice settings for user: $Identity" -ForegroundColor Green
