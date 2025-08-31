@@ -5,6 +5,7 @@ $requiredTools = @(
     @{Name = "chezmoi"; Package = "twpayne.chezmoi"}
     @{Name = "git"; Package = "Git.Git"}
     @{Name = "pwsh"; Package = "Microsoft.PowerShell"}
+    @{Name = "wt"; Package = "Microsoft.WindowsTerminal"}
 )
 
 foreach ($tool in $requiredTools) {
