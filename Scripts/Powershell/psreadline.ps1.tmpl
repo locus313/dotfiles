@@ -1,4 +1,4 @@
-{{- if eq .chezmoi.os "windows" -}}
+{{- if (eq .chezmoi.os "windows" "darwin") -}}
 # Set PSReadLine Options
 Set-PSReadLineOption -PredictionViewStyle ListView
 {{- end }}
