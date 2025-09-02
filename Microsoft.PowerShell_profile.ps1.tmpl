@@ -1,11 +1,16 @@
-{{- if eq .chezmoi.os "windows" -}}
+{{- if (eq .chezmoi.os "windows" "darwin") -}}
 # Set UTF-8 encoding for better compatibility
 # https://ohmyposh.dev/docs/faq#my-prompt-is-broken-after-upgrading-to-powershell-74
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
 
 # Initialize oh-my-posh with night-owl theme
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
-    oh-my-posh init pwsh --config $env:POSH_THEMES_PATH\night-owl.omp.json | Invoke-Expression
+{{- if eq .chezmoi.os "darwin" }}
+    $themePath = "$(brew --prefix oh-my-posh)/themes/night-owl.omp.json"
+{{- else }}
+    $themePath = "$env:POSH_THEMES_PATH\night-owl.omp.json"
+{{- end }}
+    oh-my-posh init pwsh --config $themePath | Invoke-Expression
 } else {
     Write-Warning "oh-my-posh not found. Please install it to enable enhanced prompt."
 }
