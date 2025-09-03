@@ -1,4 +1,4 @@
-{{- if (eq .chezmoi.os "windows" "darwin") -}}
+{{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
 # Set UTF-8 encoding for better compatibility
 # https://ohmyposh.dev/docs/faq#my-prompt-is-broken-after-upgrading-to-powershell-74
 [Console]::OutputEncoding = [Text.Encoding]::UTF8

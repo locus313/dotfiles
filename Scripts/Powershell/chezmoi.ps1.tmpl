@@ -1,4 +1,4 @@
-{{- if (eq .chezmoi.os "windows" "darwin") -}}
+{{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
 {{- if (or (eq .pmode true) (eq .oagmode true)) }}
 function cz {
     $env:BW_SESSION = $(bw unlock --raw) 

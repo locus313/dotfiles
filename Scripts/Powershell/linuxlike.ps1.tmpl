@@ -1,4 +1,4 @@
-{{- if (eq .chezmoi.os "windows" "darwin") -}}
+{{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
 function touch ($file) { 
     "" | Out-File $file -Encoding ASCII 
 }

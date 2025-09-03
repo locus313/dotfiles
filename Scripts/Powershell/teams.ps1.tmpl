@@ -1,4 +1,4 @@
-{{- if (eq .chezmoi.os "windows" "darwin") -}}
+{{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
 # Microsoft Teams and Skype for Business Online Management Functions
 
 function Test-TeamsAuthentication {
