@@ -90,16 +90,23 @@ $helperScriptBasePath = "$env:HOME/code/helper-scripts/powershell"
 {{- else }}
 $helperScriptBasePath = "$env:USERPROFILE\code\helper-scripts\powershell"
 {{- end }}
-$helperScriptPath = Join-Path $helperScriptBasePath "teams.ps1"
-if (Test-Path $helperScriptPath) {
-    try {
-        . $helperScriptPath
+$helperScriptFiles = @(
+    "teams.ps1",
+    "graph.ps1"
+)
+
+foreach ($helperScript in $helperScriptFiles) {
+    $helperScriptPath = Join-Path $helperScriptBasePath $helperScript
+    if (Test-Path $helperScriptPath) {
+        try {
+            . $helperScriptPath
+        }
+        catch {
+            Write-Warning "Failed to source helper script: $helperScript. Error: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Warning "Helper script not found: $helperScriptPath"
     }
-    catch {
-        Write-Warning "Failed to source helper script: teams.ps1. Error: $($_.Exception.Message)"
-    }
-} else {
-    Write-Warning "Helper script not found: $helperScriptPath"
 }
 
 # Set environment variables
