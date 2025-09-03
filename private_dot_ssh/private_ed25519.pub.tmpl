@@ -1,0 +1,3 @@
+{{- if eq .oagmode true }}
+{{ (index (bitwardenFields "item" "chezmoi") "oagmode-ssh-pub").value }}
+{{- end }}

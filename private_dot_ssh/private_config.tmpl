@@ -4,9 +4,19 @@ Host github.com
   PreferredAuthentications publickey
   {{- if eq .chezmoi.os "darwin" }}
   {{- if (or (eq .pmode true) (eq .oagmode true)) }}
+  IdentityFile ~/.ssh/id_rsa.pub
   IdentityAgent ~/.bitwarden-ssh-agent.sock
   {{- end }}
   {{- end }}
+{{- if eq .oagmode true }}
+Host github-oag.com
+  HostName github.com
+  User git
+  Port 22
+  PreferredAuthentications publickey
+  IdentityFile ~/.ssh/ed25519.pub
+  IdentityAgent ~/.bitwarden-ssh-agent.sock
+{{- end }}
 
   {{- if eq .ptxmode true }}
   # SSH over Session Manager
