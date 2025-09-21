@@ -5,15 +5,19 @@ set -e  # Exit on error
 
 echo "[-] Starting package installation for Linux [-]"
 
-{{- if eq .chezmoi.osRelease.id "almalinux" }}
-echo "[-] Installing packages using DNF (AlmaLinux) [-]"
+{{- if (eq .chezmoi.osRelease.id "almalinux" "fedora") }}
+echo "[-] Installing packages using DNF (AlmaLinux/Fedora) [-]"
 {{ range .packages.linux.dnfs -}}
+{{- if and (eq . "code") $.wsl }}
+echo "Skipping {{ . }} on WSL (use VS Code on Windows host with WSL extension)"
+{{- else }}
 if ! rpm -q {{ . | quote }} >/dev/null 2>&1; then
     echo "Installing {{ . }}..."
-    sudo dnf install -y {{ . | quote }}
+    sudo dnf install --skip-unavailable -y {{ . | quote }}
 else
     echo "{{ . }} is already installed"
 fi
+{{- end }}
 {{ end -}}
 {{- end }}
 
@@ -23,16 +27,20 @@ sudo apt update
 
 echo "[-] Installing packages using APT [-]"
 {{ range .packages.linux.apts -}}
+{{- if and (eq . "code") $.wsl }}
+echo "Skipping {{ . }} on WSL (use VS Code on Windows host with WSL extension)"
+{{- else }}
 if ! dpkg -l {{ . | quote }} >/dev/null 2>&1; then
     echo "Installing {{ . }}..."
     sudo apt install -y {{ . | quote }}
 else
     echo "{{ . }} is already installed"
 fi
+{{- end }}
 {{ end -}}
 {{- end }}
 
-{{- if eq .chezmoi.osRelease.id "pop" }}
+{{- if (eq .chezmoi.osRelease.id "fedora" "pop") }}
 echo "[-] Installing Flatpak applications [-]"
 {{ range .packages.linux.flatpak -}}
 if ! flatpak list | grep -q {{ . | quote }}; then
@@ -43,15 +51,19 @@ else
 fi
 {{ end -}}
 
+{{- if not .wsl }}
 echo "[-] Installing VS Code extensions [-]"
 {{ range .extensions.linux.vscode }}
-if ! flatpak run com.visualstudio.code --list-extensions | grep -q {{ . | quote }}; then
+if ! code --list-extensions | grep -q {{ . | quote }}; then
     echo "Installing extension {{ . }}..."
-    flatpak run com.visualstudio.code --force --install-extension {{ . | quote }}
+    code --force --install-extension {{ . | quote }}
 else
     echo "Extension {{ . }} is already installed"
 fi
 {{ end }}
+{{- else }}
+echo "Skipping VS Code extensions on WSL (manage extensions through VS Code on Windows host)"
+{{- end }}
 {{- end }}
 
 echo "[-] Package installation completed [-]"

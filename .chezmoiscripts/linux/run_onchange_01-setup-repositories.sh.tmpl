@@ -1,0 +1,70 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/sh
+
+set -e  # Exit on error
+
+echo "[-] Setting up repositories for Linux [-]"
+
+{{- if (eq .chezmoi.osRelease.id "almalinux" "fedora") }}
+echo "[-] Setting up repositories for Fedora/AlmaLinux [-]"
+
+{{- if not .wsl }}
+# VS Code Repository Setup
+if [ ! -f /etc/yum.repos.d/vscode.repo ]; then
+    echo "Setting up Visual Studio Code repository..."
+    
+    # Import Microsoft signing key
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    
+    # Create VS Code repository configuration
+    echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\nautorefresh=1\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
+    
+    echo "Visual Studio Code repository configured successfully"
+else
+    echo "Visual Studio Code repository already configured"
+fi
+{{- else }}
+echo "Skipping VS Code repository setup on WSL (use VS Code on Windows host with WSL extension)"
+{{- end }}
+
+{{- end }}
+
+{{- if (eq .chezmoi.osRelease.id "debian" "ubuntu" "pop") }}
+echo "[-] Setting up repositories for Debian/Ubuntu [-]"
+
+{{- if not .wsl }}
+# VS Code Repository Setup
+if [ ! -f /etc/apt/sources.list.d/vscode.sources ]; then
+    echo "Setting up Visual Studio Code repository..."
+    
+    # Install required packages
+    sudo apt-get install -y wget gpg
+    
+    # Import Microsoft signing key
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    sudo install -D -o root -g root -m 644 microsoft.gpg /usr/share/keyrings/microsoft.gpg
+    rm -f microsoft.gpg
+    
+    # Create VS Code repository configuration
+    echo "Types: deb
+URIs: https://packages.microsoft.com/repos/code
+Suites: stable
+Components: main
+Architectures: amd64,arm64,armhf
+Signed-By: /usr/share/keyrings/microsoft.gpg" | sudo tee /etc/apt/sources.list.d/vscode.sources > /dev/null
+    
+    # Update package lists
+    sudo apt update
+    
+    echo "Visual Studio Code repository configured successfully"
+else
+    echo "Visual Studio Code repository already configured"
+fi
+{{- else }}
+echo "Skipping VS Code repository setup on WSL (use VS Code on Windows host with WSL extension)"
+{{- end }}
+
+{{- end }}
+
+echo "[-] Repository setup completed [-]"
+{{ end -}}

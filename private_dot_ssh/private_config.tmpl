@@ -2,6 +2,7 @@ Host github.com
   User git
   Port 22
   PreferredAuthentications publickey
+  PubkeyAcceptedKeyTypes +ssh-rsa
   {{- if eq .chezmoi.os "darwin" }}
   {{- if (or (eq .pmode true) (eq .oagmode true)) }}
   IdentityFile ~/.ssh/id_rsa.pub

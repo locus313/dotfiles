@@ -20,6 +20,7 @@ packages:
       - jq
       - ncdu
       - awscli
+      - code
     apts:
       - git
       - curl 
@@ -32,6 +33,7 @@ packages:
       - ncdu
       - direnv
       - awscli
+      - code
     flatpak:
       - com.bitwarden.desktop
       - com.discordapp.Discord
@@ -40,13 +42,12 @@ packages:
       - com.makemkv.MakeMKV
       - com.synology.SynologyDrive
       - com.valvesoftware.Steam
-      - com.visualstudio.code
       - dev.deedles.Trayscale
       - io.missioncenter.MissionCenter
       - md.obsidian.Obsidian
       - org.flameshot.Flameshot
       - org.gnome.Loupe
-      - org.mozilla.Thunderbird
+      - net.thunderbird.Thunderbird
       - org.remmina.Remmina
       - org.videolan.VLC
       - tv.plex.PlexDesktop

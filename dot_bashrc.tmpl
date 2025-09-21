@@ -122,9 +122,15 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-{{- if eq .oagmode true }}
-# Bitwarden SSH agent for oagmode
-export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
+{{- if or .pmode .oagmode }}
+# Bitwarden SSH agent for pmode and oagmode
+if [ -d "$HOME/.var/app/com.bitwarden.desktop/data" ] ; then
+    # Bitwarden running as Flatpak
+    export SSH_AUTH_SOCK=$HOME/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock
+else
+    # Bitwarden installed normally
+    export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
+fi
 {{- end }}
 
 {{- if eq .oagmode true }}
