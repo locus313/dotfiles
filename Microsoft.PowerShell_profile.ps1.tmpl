@@ -87,27 +87,20 @@ foreach ($script in $scriptFiles) {
 # Source additional helper scripts
 {{- if eq .oagmode true }}
 {{- if eq .chezmoi.os "darwin" }}
-$helperScriptBasePath = "$env:HOME/code/helper-scripts/powershell"
+$helperScriptPath = "$env:HOME/code/helper-scripts/powershell/Microsoft.PowerShell_profile.ps1"
 {{- else }}
-$helperScriptBasePath = "$env:USERPROFILE\code\helper-scripts\powershell"
+$helperScriptPath = "$env:USERPROFILE\code\helper-scripts\powershell\Microsoft.PowerShell_profile.ps1"
 {{- end }}
-$helperScriptFiles = @(
-    "teams.ps1",
-    "graph.ps1"
-)
 
-foreach ($helperScript in $helperScriptFiles) {
-    $helperScriptPath = Join-Path $helperScriptBasePath $helperScript
-    if (Test-Path $helperScriptPath) {
-        try {
-            . $helperScriptPath
-        }
-        catch {
-            Write-Warning "Failed to source helper script: $helperScript. Error: $($_.Exception.Message)"
-        }
-    } else {
-        Write-Warning "Helper script not found: $helperScriptPath"
+if (Test-Path $helperScriptPath) {
+    try {
+        . $helperScriptPath
     }
+    catch {
+        Write-Warning "Failed to source helper script: Microsoft.PowerShell_profile.ps1. Error: $($_.Exception.Message)"
+    }
+} else {
+    Write-Warning "Helper script not found: $helperScriptPath"
 }
 {{- end }}
 
