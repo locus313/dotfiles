@@ -16,7 +16,9 @@ Host github-oag.com
   Port 22
   PreferredAuthentications publickey
   IdentityFile ~/.ssh/ed25519.pub
+  {{- if ne .chezmoi.os "windows" }}
   IdentityAgent ~/.bitwarden-ssh-agent.sock
+  {{- end }}
 {{- end }}
 
   {{- if eq .ptxmode true }}
