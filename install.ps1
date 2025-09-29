@@ -8,6 +8,17 @@ $requiredTools = @(
     @{Name = "wt"; Package = "Microsoft.WindowsTerminal"}
 )
 
+# Install CaskaydiaCove Nerd Font
+Write-Host "Installing CaskaydiaCove Nerd Font..." -ForegroundColor Yellow
+try {
+    winget install --source winget --accept-package-agreements --accept-source-agreements "ryanoasis.cascadia-code"
+    Write-Host "CaskaydiaCove Nerd Font installed successfully!" -ForegroundColor Green
+}
+catch {
+    Write-Warning "Failed to install CaskaydiaCove Nerd Font: $($_.Exception.Message)"
+    Write-Host "You may need to install the font manually from: https://github.com/ryanoasis/nerd-fonts/releases/latest" -ForegroundColor Yellow
+}
+
 foreach ($tool in $requiredTools) {
     if (!(Get-Command $tool.Name -ErrorAction SilentlyContinue)) {
         Write-Host "Installing $($tool.Name)..." -ForegroundColor Yellow
