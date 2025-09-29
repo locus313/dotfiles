@@ -13,7 +13,7 @@ echo "Skipping {{ . }} on WSL (use VS Code on Windows host with WSL extension)"
 {{- else }}
 if ! rpm -q {{ . | quote }} >/dev/null 2>&1; then
     echo "Installing {{ . }}..."
-    sudo dnf install --skip-unavailable -y {{ . | quote }}
+    sudo dnf install -y {{ . | quote }} || echo "Warning: Failed to install {{ . }}"
 else
     echo "{{ . }} is already installed"
 fi
