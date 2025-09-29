@@ -1,56 +1,218 @@
 {{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
-# Git shortcut functions for improved workflow
+<#
+.SYNOPSIS
+    Git helper functions for improved workflow and productivity
+.DESCRIPTION
+    Provides convenient shortcut functions for common Git operations with proper parameter validation
+.NOTES
+    Author: Patrick Lewis
+    These functions wrap common git commands with PowerShell best practices
+#>
+
+# Git status shortcut
 function gs { 
+    <#
+    .SYNOPSIS
+        Display git status in a compact format
+    .EXAMPLE
+        gs
+    #>
     [CmdletBinding()]
     param()
-    git status 
-}
-
-function ga { 
-    [CmdletBinding()]
-    param(
-        [string[]]$Path = @(".")
-    )
-    git add @Path 
-}
-
-function gc { 
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message
-    )
-    git commit -m $Message 
-}
-
-function gp { 
-    [CmdletBinding()]
-    param(
-        [string]$Remote = "origin",
-        [string]$Branch
-    )
     
-    if ($Branch) {
-        git push $Remote $Branch
-    } else {
-        git push
+    try {
+        git status
+    }
+    catch {
+        Write-Error "Failed to get git status: $($_.Exception.Message)"
     }
 }
 
-# Additional helpful git functions
-function gl {
+# Git add shortcut with improved parameter handling
+function ga { 
+    <#
+    .SYNOPSIS
+        Add files to git staging area
+    .PARAMETER Path
+        File paths to add (defaults to current directory)
+    .EXAMPLE
+        ga
+        ga file1.txt file2.txt
+        ga src/
+    #>
     [CmdletBinding()]
-    param([int]$Count = 10)
-    git log --oneline -n $Count
+    param(
+        [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [ValidateNotNull()]
+        [string[]]$Path = @(".")
+    )
+    
+    process {
+        try {
+            git add @Path
+        }
+        catch {
+            Write-Error "Failed to add files to git: $($_.Exception.Message)"
+        }
+    }
 }
 
-function gd {
+# Git commit shortcut with mandatory message
+function gc { 
+    <#
+    .SYNOPSIS
+        Create a git commit with the specified message
+    .PARAMETER Message
+        Commit message (required)
+    .EXAMPLE
+        gc "Add new feature"
+        gc "Fix bug in authentication"
+    #>
     [CmdletBinding()]
-    param([string[]]$Path)
-    if ($Path) {
-        git diff @Path
-    } else {
-        git diff
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Message
+    )
+    
+    try {
+        git commit -m $Message
+    }
+    catch {
+        Write-Error "Failed to create git commit: $($_.Exception.Message)"
+    }
+}
+
+# Git push shortcut with flexible parameters
+function gp { 
+    <#
+    .SYNOPSIS
+        Push commits to remote repository
+    .PARAMETER Remote
+        Remote name (defaults to 'origin')
+    .PARAMETER Branch
+        Branch name (optional, uses current branch if not specified)
+    .EXAMPLE
+        gp
+        gp -Remote upstream
+        gp -Remote origin -Branch feature-branch
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]$Remote = "origin",
+        
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]$Branch
+    )
+    
+    try {
+        if ($Branch) {
+            git push $Remote $Branch
+        } else {
+            git push
+        }
+    }
+    catch {
+        Write-Error "Failed to push to git remote: $($_.Exception.Message)"
+    }
+}
+
+# Git log shortcut with configurable count
+function gl {
+    <#
+    .SYNOPSIS
+        Display git log in one-line format
+    .PARAMETER Count
+        Number of commits to display (default: 10)
+    .EXAMPLE
+        gl
+        gl -Count 20
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [ValidateRange(1, 1000)]
+        [int]$Count = 10
+    )
+    
+    try {
+        git log --oneline -n $Count
+    }
+    catch {
+        Write-Error "Failed to get git log: $($_.Exception.Message)"
+    }
+}
+
+# Git diff shortcut with optional file paths
+function gd {
+    <#
+    .SYNOPSIS
+        Display git diff for specified files or all changes
+    .PARAMETER Path
+        File paths to show diff for (optional)
+    .EXAMPLE
+        gd
+        gd src/file.ps1
+        gd src/ docs/
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(ValueFromPipeline = $true)]
+        [string[]]$Path
+    )
+    
+    try {
+        if ($Path) {
+            git diff @Path
+        } else {
+            git diff
+        }
+    }
+    catch {
+        Write-Error "Failed to get git diff: $($_.Exception.Message)"
+    }
+}
+
+# Git branch shortcut
+function gb {
+    <#
+    .SYNOPSIS
+        List git branches or create a new branch
+    .PARAMETER Name
+        Branch name to create (optional)
+    .PARAMETER Checkout
+        Switch to the branch after creating it
+    .EXAMPLE
+        gb                          # List branches
+        gb feature-xyz              # Create new branch
+        gb feature-xyz -Checkout    # Create and checkout new branch
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name,
+        
+        [Parameter()]
+        [switch]$Checkout
+    )
+    
+    try {
+        if ($Name) {
+            if ($Checkout) {
+                git checkout -b $Name
+            } else {
+                git branch $Name
+            }
+        } else {
+            git branch
+        }
+    }
+    catch {
+        Write-Error "Failed to execute git branch command: $($_.Exception.Message)"
     }
 }
 {{- end }}

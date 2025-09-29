@@ -1,57 +1,448 @@
 {{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
-function touch ($file) { 
-    "" | Out-File $file -Encoding ASCII 
-}
+<#
+.SYNOPSIS
+    Linux-like utility functions for cross-platform compatibility
+.DESCRIPTION
+    Provides Linux-style commands and utilities for PowerShell environments
+.NOTES
+    Author: Patrick Lewis
+    These functions bridge the gap between Linux commands and PowerShell cmdlets
+#>
 
-function unzip ($file) {
-    Write-Output("Extracting", $file, "to", $pwd)
-    $fullFile = Get-ChildItem -Path $pwd -Filter $file | ForEach-Object { $_.FullName }
-    Expand-Archive -Path $fullFile -DestinationPath $pwd
-}
-
-function grep($regex, $dir) {
-    if ( $dir ) {
-        Get-ChildItem $dir | select-string $regex
-        return
+# Create empty file (Linux touch equivalent)
+function touch {
+    <#
+    .SYNOPSIS
+        Create an empty file or update file timestamp
+    .PARAMETER Path
+        Path to the file to create or touch
+    .EXAMPLE
+        touch newfile.txt
+        touch /path/to/file.log
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Path
+    )
+    
+    try {
+        if (Test-Path $Path) {
+            # Update timestamp of existing file
+            (Get-Item $Path).LastWriteTime = Get-Date
+            Write-Verbose "Updated timestamp for: $Path"
+        } else {
+            # Create new empty file
+            "" | Out-File $Path -Encoding UTF8
+            Write-Verbose "Created new file: $Path"
+        }
     }
-    $input | select-string $regex
+    catch {
+        Write-Error "Failed to touch file '$Path': $($_.Exception.Message)"
+    }
 }
 
+# Extract archive files
+function unzip {
+    <#
+    .SYNOPSIS
+        Extract ZIP archive to current directory
+    .PARAMETER Path
+        Path to the ZIP file to extract
+    .PARAMETER Destination
+        Destination directory (defaults to current directory)
+    .EXAMPLE
+        unzip archive.zip
+        unzip archive.zip -Destination C:\temp
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateScript({ Test-Path $_ })]
+        [string]$Path,
+        
+        [Parameter()]
+        [string]$Destination = $PWD
+    )
+    
+    try {
+        $fullPath = Get-ChildItem -Path $Path | Select-Object -ExpandProperty FullName
+        Write-Host "Extracting '$fullPath' to '$Destination'" -ForegroundColor Green
+        
+        Expand-Archive -Path $fullPath -DestinationPath $Destination -Force
+        Write-Verbose "Successfully extracted archive"
+    }
+    catch {
+        Write-Error "Failed to extract archive '$Path': $($_.Exception.Message)"
+    }
+}
+
+# Search text in files (Linux grep equivalent)
+function grep {
+    <#
+    .SYNOPSIS
+        Search for text patterns in files
+    .PARAMETER Pattern
+        Regular expression pattern to search for
+    .PARAMETER Path
+        Directory or file path to search in
+    .PARAMETER InputObject
+        Input from pipeline
+    .EXAMPLE
+        grep "error" *.log
+        Get-Content file.txt | grep "pattern"
+        grep "function" src/
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string]$Pattern,
+        
+        [Parameter(Position = 1)]
+        [string]$Path,
+        
+        [Parameter(ValueFromPipeline = $true)]
+        [string[]]$InputObject
+    )
+    
+    process {
+        try {
+            if ($InputObject) {
+                # Process pipeline input
+                $InputObject | Select-String $Pattern
+            } elseif ($Path) {
+                # Search in specified path
+                if (Test-Path $Path) {
+                    Get-ChildItem $Path -Recurse -File | Select-String $Pattern
+                } else {
+                    Write-Warning "Path not found: $Path"
+                }
+            } else {
+                Write-Warning "No input provided. Use: grep 'pattern' path OR pipeline | grep 'pattern'"
+            }
+        }
+        catch {
+            Write-Error "Failed to search pattern '$Pattern': $($_.Exception.Message)"
+        }
+    }
+}
+
+# Display disk usage (Linux df equivalent)
 function df {
-    get-volume
+    <#
+    .SYNOPSIS
+        Display filesystem disk space usage
+    .EXAMPLE
+        df
+    #>
+    [CmdletBinding()]
+    param()
+    
+    try {
+        Get-Volume | Select-Object DriveLetter, 
+                                   @{Name="Size(GB)"; Expression={[math]::Round($_.Size/1GB, 2)}}, 
+                                   @{Name="Used(GB)"; Expression={[math]::Round(($_.Size - $_.SizeRemaining)/1GB, 2)}}, 
+                                   @{Name="Free(GB)"; Expression={[math]::Round($_.SizeRemaining/1GB, 2)}}, 
+                                   @{Name="Use%"; Expression={[math]::Round((($_.Size - $_.SizeRemaining)/$_.Size)*100, 1)}}
+    }
+    catch {
+        Write-Error "Failed to get disk usage information: $($_.Exception.Message)"
+    }
 }
 
-function sed($file, $find, $replace) {
-    (Get-Content $file).replace("$find", $replace) | Set-Content $file
+# Find and replace text in files (Linux sed equivalent)
+function sed {
+    <#
+    .SYNOPSIS
+        Find and replace text in files
+    .PARAMETER Path
+        File path to modify
+    .PARAMETER Find
+        Text to find
+    .PARAMETER Replace
+        Replacement text
+    .PARAMETER Backup
+        Create backup file before modification
+    .EXAMPLE
+        sed file.txt "old text" "new text"
+        sed file.txt "pattern" "replacement" -Backup
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateScript({ Test-Path $_ })]
+        [string]$Path,
+        
+        [Parameter(Mandatory = $true, Position = 1)]
+        [string]$Find,
+        
+        [Parameter(Mandatory = $true, Position = 2)]
+        [string]$Replace,
+        
+        [Parameter()]
+        [switch]$Backup
+    )
+    
+    try {
+        if ($Backup) {
+            Copy-Item $Path "$Path.bak"
+            Write-Verbose "Created backup: $Path.bak"
+        }
+        
+        (Get-Content $Path -Raw) -replace [regex]::Escape($Find), $Replace | Set-Content $Path
+        Write-Verbose "Replaced '$Find' with '$Replace' in '$Path'"
+    }
+    catch {
+        Write-Error "Failed to replace text in '$Path': $($_.Exception.Message)"
+    }
 }
 
-function which($name) {
-    Get-Command $name | Select-Object -ExpandProperty Definition
+# Find command location (Linux which equivalent)
+function which {
+    <#
+    .SYNOPSIS
+        Locate a command and show its path
+    .PARAMETER Name
+        Command name to locate
+    .EXAMPLE
+        which git
+        which python
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name
+    )
+    
+    try {
+        $command = Get-Command $Name -ErrorAction SilentlyContinue
+        if ($command) {
+            $command | Select-Object -ExpandProperty Definition
+        } else {
+            Write-Warning "Command '$Name' not found"
+        }
+    }
+    catch {
+        Write-Error "Failed to locate command '$Name': $($_.Exception.Message)"
+    }
 }
 
-function export($name, $value) {
-    set-item -force -path "env:$name" -value $value;
+# Set environment variable (Linux export equivalent)
+function export {
+    <#
+    .SYNOPSIS
+        Set environment variable
+    .PARAMETER Name
+        Variable name
+    .PARAMETER Value
+        Variable value
+    .EXAMPLE
+        export "PATH" "/new/path:$env:PATH"
+        export "MY_VAR" "my_value"
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name,
+        
+        [Parameter(Mandatory = $true, Position = 1)]
+        [AllowEmptyString()]
+        [string]$Value
+    )
+    
+    try {
+        Set-Item -Force -Path "env:$Name" -Value $Value
+        Write-Verbose "Set environment variable: $Name = $Value"
+    }
+    catch {
+        Write-Error "Failed to set environment variable '$Name': $($_.Exception.Message)"
+    }
 }
 
-function pkill($name) {
-    Get-Process $name -ErrorAction SilentlyContinue | Stop-Process
+# Kill processes by name (Linux pkill equivalent)
+function pkill {
+    <#
+    .SYNOPSIS
+        Kill processes by name
+    .PARAMETER Name
+        Process name to kill
+    .PARAMETER Force
+        Force kill processes
+    .EXAMPLE
+        pkill notepad
+        pkill chrome -Force
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name,
+        
+        [Parameter()]
+        [switch]$Force
+    )
+    
+    try {
+        $processes = Get-Process $Name -ErrorAction SilentlyContinue
+        if ($processes) {
+            $processes | Stop-Process -Force:$Force
+            Write-Host "Killed $($processes.Count) process(es) named '$Name'" -ForegroundColor Green
+        } else {
+            Write-Warning "No processes found with name '$Name'"
+        }
+    }
+    catch {
+        Write-Error "Failed to kill processes named '$Name': $($_.Exception.Message)"
+    }
 }
 
-function pgrep($name) {
-    Get-Process $name
+# Find processes by name (Linux pgrep equivalent)
+function pgrep {
+    <#
+    .SYNOPSIS
+        Find processes by name
+    .PARAMETER Name
+        Process name to search for
+    .EXAMPLE
+        pgrep notepad
+        pgrep chrome
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name
+    )
+    
+    try {
+        Get-Process $Name -ErrorAction SilentlyContinue
+    }
+    catch {
+        Write-Error "Failed to find processes named '$Name': $($_.Exception.Message)"
+    }
 }
 
+# Display first lines of file (Linux head equivalent)
 function head {
-  param($Path, $n = 10)
-  Get-Content $Path -Head $n
+    <#
+    .SYNOPSIS
+        Display the first lines of a file
+    .PARAMETER Path
+        File path to read
+    .PARAMETER Count
+        Number of lines to display (default: 10)
+    .EXAMPLE
+        head file.txt
+        head file.txt -Count 20
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateScript({ Test-Path $_ })]
+        [string]$Path,
+        
+        [Parameter()]
+        [ValidateRange(1, 10000)]
+        [int]$Count = 10
+    )
+    
+    try {
+        Get-Content $Path -Head $Count
+    }
+    catch {
+        Write-Error "Failed to read head of file '$Path': $($_.Exception.Message)"
+    }
 }
 
+# Display last lines of file (Linux tail equivalent)
 function tail {
-  param($Path, $n = 10, [switch]$f = $false)
-  Get-Content $Path -Tail $n -Wait:$f
+    <#
+    .SYNOPSIS
+        Display the last lines of a file
+    .PARAMETER Path
+        File path to read
+    .PARAMETER Count
+        Number of lines to display (default: 10)
+    .PARAMETER Follow
+        Follow file changes (like tail -f)
+    .EXAMPLE
+        tail file.txt
+        tail file.txt -Count 20
+        tail log.txt -Follow
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateScript({ Test-Path $_ })]
+        [string]$Path,
+        
+        [Parameter()]
+        [ValidateRange(1, 10000)]
+        [int]$Count = 10,
+        
+        [Parameter()]
+        [switch]$Follow
+    )
+    
+    try {
+        Get-Content $Path -Tail $Count -Wait:$Follow
+    }
+    catch {
+        Write-Error "Failed to read tail of file '$Path': $($_.Exception.Message)"
+    }
 }
 
-# Enhanced Listing
-function la { Get-ChildItem -Path . -Force | Format-Table -AutoSize }
-function ll { Get-ChildItem -Path . -Force -Hidden | Format-Table -AutoSize }
+# Enhanced directory listing with better formatting
+function la { 
+    <#
+    .SYNOPSIS
+        List all files including hidden ones (Linux ls -la equivalent)
+    .PARAMETER Path
+        Directory path (defaults to current directory)
+    .EXAMPLE
+        la
+        la C:\Windows
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [string]$Path = "."
+    )
+    
+    try {
+        Get-ChildItem -Path $Path -Force | Format-Table -AutoSize
+    }
+    catch {
+        Write-Error "Failed to list directory '$Path': $($_.Exception.Message)"
+    }
+}
+
+function ll { 
+    <#
+    .SYNOPSIS
+        Long listing format including hidden files
+    .PARAMETER Path
+        Directory path (defaults to current directory)
+    .EXAMPLE
+        ll
+        ll /home/user
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [string]$Path = "."
+    )
+    
+    try {
+        Get-ChildItem -Path $Path -Force | 
+            Select-Object Mode, LastWriteTime, Length, Name | 
+            Format-Table -AutoSize
+    }
+    catch {
+        Write-Error "Failed to list directory '$Path': $($_.Exception.Message)"
+    }
+}
 {{- end }}

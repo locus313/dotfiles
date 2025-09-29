@@ -1,39 +1,75 @@
 {{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
-# network utilities
+<#
+.SYNOPSIS
+    Utility functions for system and network operations
+.DESCRIPTION
+    Provides helpful utility functions for common system administration and network tasks
+.NOTES
+    Author: Patrick Lewis
+    Cross-platform PowerShell utilities
+#>
+
+# Network utilities
 function Get-PubIP {
+    <#
+    .SYNOPSIS
+        Get public IP address from multiple sources
+    .DESCRIPTION
+        Queries multiple public IP services to determine the external IP address
+    .PARAMETER All
+        Check all sources and return detailed results
+    .PARAMETER TimeoutSeconds
+        Timeout for each request in seconds (default: 5)
+    .EXAMPLE
+        Get-PubIP
+        Get-PubIP -All
+        Get-PubIP -TimeoutSeconds 10
+    .OUTPUTS
+        String - Single IP address (default)
+        PSCustomObject[] - Detailed results from all sources (with -All)
+    #>
+    [CmdletBinding()]
     param(
+        [Parameter()]
         [switch]$All,
+        
+        [Parameter()]
+        [ValidateRange(1, 30)]
         [int]$TimeoutSeconds = 5
     )
     
-    $sources = @(
-        @{ Name = "ifconfig.me"; Url = "http://ifconfig.me/ip" },
-        @{ Name = "ipinfo.io"; Url = "http://ipinfo.io/ip" },
-        @{ Name = "icanhazip.com"; Url = "http://icanhazip.com" },
-        @{ Name = "ident.me"; Url = "http://ident.me" },
-        @{ Name = "httpbin.org"; Url = "http://httpbin.org/ip" }
+    $ipSources = @(
+        @{ Name = "ifconfig.me"; Url = "http://ifconfig.me/ip"; JsonProperty = $null },
+        @{ Name = "ipinfo.io"; Url = "http://ipinfo.io/ip"; JsonProperty = $null },
+        @{ Name = "icanhazip.com"; Url = "http://icanhazip.com"; JsonProperty = $null },
+        @{ Name = "ident.me"; Url = "http://ident.me"; JsonProperty = $null },
+        @{ Name = "httpbin.org"; Url = "http://httpbin.org/ip"; JsonProperty = "origin" }
     )
     
     if ($All) {
-        # Check all sources and return results
+        # Check all sources and return comprehensive results
         $results = @()
-        foreach ($source in $sources) {
+        
+        foreach ($source in $ipSources) {
+            Write-Host "Checking $($source.Name)..." -ForegroundColor Yellow
+            
             try {
-                Write-Host "Checking $($source.Name)..." -ForegroundColor Yellow
                 $response = Invoke-WebRequest -Uri $source.Url -TimeoutSec $TimeoutSeconds -UseBasicParsing
                 $ip = $response.Content.Trim()
                 
-                # Handle httpbin.org JSON response
-                if ($source.Name -eq "httpbin.org") {
+                # Handle JSON responses
+                if ($source.JsonProperty) {
                     $jsonResponse = $response.Content | ConvertFrom-Json
-                    $ip = $jsonResponse.origin
+                    $ip = $jsonResponse.($source.JsonProperty)
                 }
                 
                 $results += [PSCustomObject]@{
                     Source = $source.Name
                     IP = $ip
                     Status = "Success"
+                    ResponseTime = $response.Headers.'X-Response-Time'
                 }
+                
                 Write-Host "✓ $($source.Name): $ip" -ForegroundColor Green
             }
             catch {
@@ -41,28 +77,39 @@ function Get-PubIP {
                     Source = $source.Name
                     IP = $null
                     Status = "Failed: $($_.Exception.Message)"
+                    ResponseTime = $null
                 }
+                
                 Write-Host "✗ $($source.Name): Failed" -ForegroundColor Red
+                Write-Verbose "Error details: $($_.Exception.Message)"
             }
         }
+        
         return $results
     }
     else {
-        # Try sources one by one until one succeeds
-        foreach ($source in $sources) {
+        # Try sources sequentially until one succeeds
+        foreach ($source in $ipSources) {
             try {
-                Write-Verbose "Trying $($source.Name)..."
+                Write-Verbose "Attempting to get IP from $($source.Name)..."
+                
                 $response = Invoke-WebRequest -Uri $source.Url -TimeoutSec $TimeoutSeconds -UseBasicParsing
                 $ip = $response.Content.Trim()
                 
-                # Handle httpbin.org JSON response
-                if ($source.Name -eq "httpbin.org") {
+                # Handle JSON responses
+                if ($source.JsonProperty) {
                     $jsonResponse = $response.Content | ConvertFrom-Json
-                    $ip = $jsonResponse.origin
+                    $ip = $jsonResponse.($source.JsonProperty)
                 }
                 
-                Write-Verbose "Success: Got IP $ip from $($source.Name)"
-                return $ip
+                # Validate IP format
+                if ($ip -match '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$') {
+                    Write-Verbose "Successfully retrieved IP $ip from $($source.Name)"
+                    return $ip
+                } else {
+                    Write-Verbose "Invalid IP format received from $($source.Name): $ip"
+                    continue
+                }
             }
             catch {
                 Write-Verbose "Failed to get IP from $($source.Name): $($_.Exception.Message)"
@@ -71,13 +118,100 @@ function Get-PubIP {
         }
         
         # If all sources fail
-        throw "Unable to determine public IP address from any source"
+        throw "Unable to determine public IP address from any source. Check your internet connection."
     }
 }
 
-# system utilities
-
-function reload-profile {
-    & $profile
+# System utilities
+function Reload-Profile {
+    <#
+    .SYNOPSIS
+        Reload the current PowerShell profile
+    .DESCRIPTION
+        Re-executes the current PowerShell profile to apply any changes
+    .EXAMPLE
+        Reload-Profile
+    #>
+    [CmdletBinding()]
+    param()
+    
+    try {
+        if (Test-Path $PROFILE) {
+            Write-Host "Reloading PowerShell profile..." -ForegroundColor Yellow
+            . $PROFILE
+            Write-Host "✓ Profile reloaded successfully" -ForegroundColor Green
+        } else {
+            Write-Warning "Profile file not found: $PROFILE"
+        }
+    }
+    catch {
+        Write-Error "Failed to reload profile: $($_.Exception.Message)"
+    }
 }
+
+function Get-SystemInfo {
+    <#
+    .SYNOPSIS
+        Display comprehensive system information
+    .DESCRIPTION
+        Shows operating system, hardware, and PowerShell version information
+    .EXAMPLE
+        Get-SystemInfo
+    #>
+    [CmdletBinding()]
+    param()
+    
+    try {
+        $info = [PSCustomObject]@{
+            ComputerName = $env:COMPUTERNAME
+            OperatingSystem = [System.Environment]::OSVersion.VersionString
+            PowerShellVersion = $PSVersionTable.PSVersion.ToString()
+            ExecutionPolicy = Get-ExecutionPolicy
+            Culture = [System.Globalization.CultureInfo]::CurrentCulture.DisplayName
+            TimeZone = [System.TimeZoneInfo]::Local.DisplayName
+            Uptime = (Get-Date) - (Get-CimInstance Win32_OperatingSystem | Select-Object @{Name="LastBootUpTime"; Expression={$_.ConvertToDateTime($_.LastBootUpTime)}}).LastBootUpTime
+            TotalMemoryGB = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 2)
+            ProcessorName = (Get-CimInstance Win32_Processor).Name
+        }
+        
+        return $info
+    }
+    catch {
+        Write-Error "Failed to get system information: $($_.Exception.Message)"
+    }
+}
+
+function Test-Administrator {
+    <#
+    .SYNOPSIS
+        Check if current session is running as administrator
+    .DESCRIPTION
+        Returns true if the current PowerShell session has administrator privileges
+    .EXAMPLE
+        Test-Administrator
+    .OUTPUTS
+        Boolean - True if running as administrator, False otherwise
+    #>
+    [CmdletBinding()]
+    param()
+    
+    try {
+        if ($IsWindows -or ($PSVersionTable.PSVersion.Major -lt 6)) {
+            # Windows PowerShell or Windows PowerShell Core
+            $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+            $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+            return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+        } else {
+            # Unix-like systems
+            return (whoami) -eq "root"
+        }
+    }
+    catch {
+        Write-Error "Failed to check administrator status: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+# Create alias for backward compatibility
+Set-Alias -Name reload-profile -Value Reload-Profile -Description "Reload PowerShell profile (legacy alias)"
 {{- end }}

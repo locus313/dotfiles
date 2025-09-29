@@ -1,11 +1,27 @@
 {{- if eq .chezmoi.os "darwin" }}
-eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes//night-owl.omp.json)"
+# Initialize oh-my-posh with night-owl theme for Zsh
+if command -v oh-my-posh >/dev/null 2>&1; then
+    eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/night-owl.omp.json)"
+else
+    echo "Warning: oh-my-posh not found. Install it for enhanced prompt."
+fi
 
+# Source bash aliases if available
 if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+    source ~/.bash_aliases
+fi
+
+# Initialize shell enhancements
+if command -v direnv >/dev/null 2>&1; then
+    eval "$(direnv hook zsh)"
+fi
+
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init zsh)"
 fi
 
 {{- if eq .oagmode true }}
+# Configure SSH agent for Enterprise mode
 export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
 {{- end }}
 {{- end }}

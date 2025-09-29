@@ -1,4 +1,47 @@
 {{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
-# Set PSReadLine Options
-Set-PSReadLineOption -PredictionViewStyle ListView
+<#
+.SYNOPSIS
+    PSReadLine configuration for enhanced command line experience
+.DESCRIPTION
+    Configures PSReadLine with improved prediction, history, and key bindings
+.NOTES
+    Author: Patrick Lewis
+    Requires: PSReadLine module
+#>
+
+try {
+    # Configure prediction view style
+    Set-PSReadLineOption -PredictionViewStyle ListView
+    
+    # Configure history settings
+    Set-PSReadLineOption -HistorySearchCursorMovesToEnd
+    Set-PSReadLineOption -MaximumHistoryCount 4000
+    
+    # Configure editing mode and key bindings
+    Set-PSReadLineOption -EditMode Windows
+    
+    # Set colors for better visibility
+    Set-PSReadLineOption -Colors @{
+        Command   = 'Cyan'
+        Parameter = 'Green'
+        Operator  = 'Magenta'
+        Variable  = 'Yellow'
+        String    = 'Blue'
+        Number    = 'Red'
+        Type      = 'DarkCyan'
+        Comment   = 'DarkGreen'
+    }
+    
+    # Key bindings for enhanced navigation
+    Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+    Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+    
+    # Ctrl+D to exit PowerShell (like bash)
+    Set-PSReadLineKeyHandler -Key Ctrl+d -Function DeleteCharOrExit
+    
+    Write-Verbose "PSReadLine configuration loaded successfully"
+}
+catch {
+    Write-Warning "Failed to configure PSReadLine: $($_.Exception.Message)"
+}
 {{- end }}

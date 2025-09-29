@@ -143,7 +143,7 @@ export AWS_VAULT_FILE_PASSPHRASE={{ (bitwardenFields "item" "chezmoi").awsvault.
 if command -v oh-my-posh >/dev/null 2>&1; then
     eval "$(oh-my-posh init bash --config ~/.poshthemes/night-owl.omp.json)"
 else
-    echo "Warning: oh-my-posh not found. Install it for enhanced prompt."
+    echo "Warning: oh-my-posh not found. Install it for enhanced prompt." >&2
 fi
 
 if command -v direnv >/dev/null 2>&1; then

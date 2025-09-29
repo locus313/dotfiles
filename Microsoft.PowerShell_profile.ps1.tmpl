@@ -1,90 +1,145 @@
 {{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
+<#
+.SYNOPSIS
+    Patrick Lewis's PowerShell Profile - Cross-platform dotfiles configuration
+.DESCRIPTION
+    This profile provides consistent PowerShell configuration across Windows and macOS,
+    with mode-based feature enablement and proper error handling.
+.NOTES
+    Author: Patrick Lewis
+    Mode System: pmode (Personal), oagmode (Enterprise), ptxmode (Corporate)
+#>
+
 # Set UTF-8 encoding for better compatibility
 # https://ohmyposh.dev/docs/faq#my-prompt-is-broken-after-upgrading-to-powershell-74
-[Console]::OutputEncoding = [Text.Encoding]::UTF8
+try {
+    [Console]::OutputEncoding = [Text.Encoding]::UTF8
+}
+catch {
+    Write-Warning "Failed to set UTF-8 encoding: $($_.Exception.Message)"
+}
 
 # Initialize oh-my-posh with night-owl theme
-if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+try {
+    if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 {{- if eq .chezmoi.os "darwin" }}
-    $themePath = "$(brew --prefix oh-my-posh)/themes/night-owl.omp.json"
+        $themePath = "$(brew --prefix oh-my-posh)/themes/night-owl.omp.json"
 {{- else }}
-    $themePath = "$env:POSH_THEMES_PATH\night-owl.omp.json"
+        $themePath = "$env:POSH_THEMES_PATH\night-owl.omp.json"
 {{- end }}
-    oh-my-posh init pwsh --config $themePath | Invoke-Expression
-} else {
-    Write-Warning "oh-my-posh not found. Please install it to enable enhanced prompt."
+        if (Test-Path $themePath) {
+            oh-my-posh init pwsh --config $themePath | Invoke-Expression
+            Write-Verbose "oh-my-posh initialized with night-owl theme"
+        } else {
+            Write-Warning "oh-my-posh theme not found at: $themePath"
+            oh-my-posh init pwsh | Invoke-Expression
+        }
+    } else {
+        Write-Warning "oh-my-posh not found. Please install it to enable enhanced prompt."
+    }
+}
+catch {
+    Write-Warning "Failed to initialize oh-my-posh: $($_.Exception.Message)"
 }
 
-# PowerShell modules to install and import
-$modules = @("posh-git", "Terminal-Icons", "PsReadLine")
+# Install and import required PowerShell modules
+$requiredModules = @(
+    @{ Name = "posh-git"; Description = "Git integration for PowerShell" },
+    @{ Name = "Terminal-Icons"; Description = "File and folder icons in terminal" },
+    @{ Name = "PsReadLine"; Description = "Enhanced command line editing" }
+)
 
-foreach ($module in $modules) {
+foreach ($moduleInfo in $requiredModules) {
+    $moduleName = $moduleInfo.Name
     try {
-        if (-not (Get-Module -ListAvailable -Name $module)) {
-            Write-Host "Installing module: $module" -ForegroundColor Yellow
-            Install-Module -Name $module -Scope CurrentUser -Force -SkipPublisherCheck
+        if (-not (Get-Module -ListAvailable -Name $moduleName -ErrorAction SilentlyContinue)) {
+            Write-Host "Installing module: $moduleName ($($moduleInfo.Description))" -ForegroundColor Yellow
+            Install-Module -Name $moduleName -Scope CurrentUser -Force -SkipPublisherCheck -AllowClobber
         }
-        Import-Module -Name $module -ErrorAction SilentlyContinue
+        
+        Import-Module -Name $moduleName -ErrorAction SilentlyContinue
+        Write-Verbose "Successfully imported module: $moduleName"
     }
     catch {
-        Write-Warning "Failed to install or import module: $module. Error: $($_.Exception.Message)"
+        Write-Warning "Failed to install or import module '$moduleName': $($_.Exception.Message)"
     }
 }
 
-# Azure CLI Tab Completion
-if (Get-Command az -ErrorAction SilentlyContinue) {
-    Register-ArgumentCompleter -Native -CommandName az -ScriptBlock {
-        param($commandName, $wordToComplete, $cursorPosition)
-        $completion_file = New-TemporaryFile
-        $env:ARGCOMPLETE_USE_TEMPFILES = 1
-        $env:_ARGCOMPLETE_STDOUT_FILENAME = $completion_file
-        $env:COMP_LINE = $wordToComplete
-        $env:COMP_POINT = $cursorPosition
-        $env:_ARGCOMPLETE = 1
-        $env:_ARGCOMPLETE_SUPPRESS_SPACE = 0
-        $env:_ARGCOMPLETE_IFS = "`n"
-        $env:_ARGCOMPLETE_SHELL = 'powershell'
-        az 2>&1 | Out-Null
-        Get-Content $completion_file | Sort-Object | ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_, $_, "ParameterValue", $_)
+# Configure Azure CLI tab completion
+try {
+    if (Get-Command az -ErrorAction SilentlyContinue) {
+        Register-ArgumentCompleter -Native -CommandName az -ScriptBlock {
+            param($commandName, $wordToComplete, $cursorPosition)
+            
+            $completion_file = New-TemporaryFile
+            $env:ARGCOMPLETE_USE_TEMPFILES = 1
+            $env:_ARGCOMPLETE_STDOUT_FILENAME = $completion_file
+            $env:COMP_LINE = $wordToComplete
+            $env:COMP_POINT = $cursorPosition
+            $env:_ARGCOMPLETE = 1
+            $env:_ARGCOMPLETE_SUPPRESS_SPACE = 0
+            $env:_ARGCOMPLETE_IFS = "`n"
+            $env:_ARGCOMPLETE_SHELL = 'powershell'
+            
+            az 2>&1 | Out-Null
+            
+            $completions = Get-Content $completion_file | Sort-Object | ForEach-Object {
+                [System.Management.Automation.CompletionResult]::new($_, $_, "ParameterValue", $_)
+            }
+            
+            # Clean up environment variables
+            Remove-Item $completion_file, Env:\_ARGCOMPLETE_STDOUT_FILENAME, Env:\ARGCOMPLETE_USE_TEMPFILES, Env:\COMP_LINE, Env:\COMP_POINT, Env:\_ARGCOMPLETE, Env:\_ARGCOMPLETE_SUPPRESS_SPACE, Env:\_ARGCOMPLETE_IFS, Env:\_ARGCOMPLETE_SHELL -ErrorAction SilentlyContinue
+            
+            return $completions
         }
-        Remove-Item $completion_file, Env:\_ARGCOMPLETE_STDOUT_FILENAME, Env:\ARGCOMPLETE_USE_TEMPFILES, Env:\COMP_LINE, Env:\COMP_POINT, Env:\_ARGCOMPLETE, Env:\_ARGCOMPLETE_SUPPRESS_SPACE, Env:\_ARGCOMPLETE_IFS, Env:\_ARGCOMPLETE_SHELL
+        Write-Verbose "Azure CLI tab completion configured"
     }
 }
+catch {
+    Write-Warning "Failed to configure Azure CLI tab completion: $($_.Exception.Message)"
+}
 
-# Source PowerShell script files
+# Load PowerShell script modules
 {{- if eq .chezmoi.os "darwin" }}
 $scriptPath = "$env:HOME/Scripts/PowerShell"
 {{- else }}
 $scriptPath = "$env:USERPROFILE/Scripts/PowerShell"
 {{- end }}
-$scriptFiles = @(
-    "chezmoi.ps1",
-    "githelpers.ps1", 
-    "linuxlike.ps1",
-    "psreadline.ps1",
-    "utils.ps1"
+
+$coreScriptFiles = @(
+    @{ Name = "chezmoi.ps1"; Description = "Chezmoi wrapper functions" },
+    @{ Name = "githelpers.ps1"; Description = "Git shortcut functions" },
+    @{ Name = "linuxlike.ps1"; Description = "Linux-like utility functions" },
+    @{ Name = "psreadline.ps1"; Description = "PSReadLine configuration" },
+    @{ Name = "utils.ps1"; Description = "General utility functions" }
 )
 
+# Add mode-specific scripts
+$modeSpecificScripts = @()
 {{- if eq .pmode true }}
-$scriptFiles += "rename.ps1"
+$modeSpecificScripts += @{ Name = "rename.ps1"; Description = "File renaming utilities (Personal mode)" }
 {{- end }}
 
-foreach ($script in $scriptFiles) {
-    $fullPath = Join-Path $scriptPath $script
+$allScripts = $coreScriptFiles + $modeSpecificScripts
+
+foreach ($scriptInfo in $allScripts) {
+    $scriptName = $scriptInfo.Name
+    $fullPath = Join-Path $scriptPath $scriptName
+    
     if (Test-Path $fullPath) {
         try {
             . $fullPath
+            Write-Verbose "Successfully loaded script: $scriptName"
         }
         catch {
-            Write-Warning "Failed to source script: $script. Error: $($_.Exception.Message)"
+            Write-Warning "Failed to source script '$scriptName': $($_.Exception.Message)"
         }
     } else {
         Write-Warning "Script not found: $fullPath"
     }
 }
 
-# Source additional helper scripts
+# Load additional helper scripts for Enterprise mode
 {{- if eq .oagmode true }}
 {{- if eq .chezmoi.os "darwin" }}
 $helperScriptPath = "$env:HOME/code/helper-scripts/powershell/Microsoft.PowerShell_profile.ps1"
@@ -95,17 +150,24 @@ $helperScriptPath = "$env:USERPROFILE\code\helper-scripts\powershell\Microsoft.P
 if (Test-Path $helperScriptPath) {
     try {
         . $helperScriptPath
+        Write-Verbose "Successfully loaded Enterprise helper script"
     }
     catch {
-        Write-Warning "Failed to source helper script: Microsoft.PowerShell_profile.ps1. Error: $($_.Exception.Message)"
+        Write-Warning "Failed to source Enterprise helper script: $($_.Exception.Message)"
     }
 } else {
-    Write-Warning "Helper script not found: $helperScriptPath"
+    Write-Verbose "Enterprise helper script not found (this is normal if not in Enterprise mode): $helperScriptPath"
 }
 {{- end }}
 
-# Set environment variables
-$env:XDG_CONFIG_HOME = "$env:USERPROFILE\.config"
+# Configure environment variables
+try {
+    $env:XDG_CONFIG_HOME = "$env:USERPROFILE\.config"
+    Write-Verbose "XDG_CONFIG_HOME set to: $env:XDG_CONFIG_HOME"
+}
+catch {
+    Write-Warning "Failed to set XDG_CONFIG_HOME: $($_.Exception.Message)"
+}
 
 # Direnv hook (commented out - enable if needed)
 # if (Test-Path "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\direnv.direnv_Microsoft.Winget.Source_8wekyb3d8bbwe\direnv.exe") {

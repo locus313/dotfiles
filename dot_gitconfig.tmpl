@@ -1,3 +1,4 @@
+# Git configuration for {{ .name }} <{{ .email }}>
 [user]
 	email = {{ .email }}
 	name = {{ .name }}
@@ -11,8 +12,47 @@
 	filemode = false
 	autocrlf = true
 	sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
+	editor = code --wait
 {{- else if .wsl }}
 [core]
 	autocrlf = input
 	sshCommand = /mnt/c/WINDOWS/System32/OpenSSH/ssh.exe
+	editor = code --wait
+{{- else }}
+[core]
+	autocrlf = input
+	editor = code --wait
 {{- end }}
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = true
+
+[push]
+	default = simple
+	autoSetupRemote = true
+
+[merge]
+	tool = vscode
+	conflictstyle = diff3
+
+[mergetool "vscode"]
+	cmd = code --wait $MERGED
+
+[diff]
+	tool = vscode
+
+[difftool "vscode"]
+	cmd = code --wait --diff $LOCAL $REMOTE
+
+[alias]
+	st = status
+	co = checkout
+	br = branch
+	ci = commit
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	visual = !gitk
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit

@@ -1,11 +1,79 @@
 {{- if eq .chezmoi.os "windows" -}}
 {{- if eq .pmode true -}}
+<#
+.SYNOPSIS
+    File renaming utilities for Personal mode
+.DESCRIPTION
+    Specialized file renaming functions for personal use cases
+.NOTES
+    Author: Patrick Lewis
+    Mode: Personal mode only
+#>
+
 function Rename-PlayOnCloudRecordings {
-    Get-ChildItem -Path "$env:USERPROFILE\Videos\PlayOn Cloud Recordings" -Filter "*.mp4" | ForEach-Object {
-        if ($_.Name -match '^\d+_') {
-            $newName = $_.Name -replace '^\d+_', ''
-            Rename-Item -Path $_.FullName -NewName $newName
+    <#
+    .SYNOPSIS
+        Clean up PlayOn Cloud recording filenames by removing numeric prefixes
+    .DESCRIPTION
+        Removes numeric prefixes (e.g., "12345_") from PlayOn Cloud recording files
+    .PARAMETER Path
+        Directory path containing recordings (defaults to PlayOn Cloud Recordings folder)
+    .PARAMETER WhatIf
+        Show what would be renamed without actually performing the operation
+    .EXAMPLE
+        Rename-PlayOnCloudRecordings
+        Rename-PlayOnCloudRecordings -WhatIf
+        Rename-PlayOnCloudRecordings -Path "C:\Custom\Path"
+    #>
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter()]
+        [string]$Path = "$env:USERPROFILE\Videos\PlayOn Cloud Recordings",
+        
+        [Parameter()]
+        [switch]$WhatIf
+    )
+    
+    try {
+        if (-not (Test-Path $Path)) {
+            Write-Warning "PlayOn Cloud Recordings directory not found: $Path"
+            return
         }
+        
+        $mp4Files = Get-ChildItem -Path $Path -Filter "*.mp4" | Where-Object { $_.Name -match '^\d+_' }
+        
+        if (-not $mp4Files) {
+            Write-Host "No files found with numeric prefixes to rename." -ForegroundColor Green
+            return
+        }
+        
+        Write-Host "Found $($mp4Files.Count) file(s) to rename:" -ForegroundColor Yellow
+        
+        foreach ($file in $mp4Files) {
+            $newName = $file.Name -replace '^\d+_', ''
+            $newPath = Join-Path $file.Directory $newName
+            
+            if ($WhatIf) {
+                Write-Host "Would rename: '$($file.Name)' -> '$newName'" -ForegroundColor Cyan
+            } else {
+                if ($PSCmdlet.ShouldProcess($file.FullName, "Rename to $newName")) {
+                    try {
+                        Rename-Item -Path $file.FullName -NewName $newName -ErrorAction Stop
+                        Write-Host "✓ Renamed: '$($file.Name)' -> '$newName'" -ForegroundColor Green
+                    }
+                    catch {
+                        Write-Error "Failed to rename '$($file.Name)': $($_.Exception.Message)"
+                    }
+                }
+            }
+        }
+        
+        if (-not $WhatIf) {
+            Write-Host "Renaming operation completed." -ForegroundColor Green
+        }
+    }
+    catch {
+        Write-Error "Failed to process PlayOn Cloud recordings: $($_.Exception.Message)"
     }
 }
 {{- end }}

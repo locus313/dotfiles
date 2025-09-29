@@ -1,12 +1,84 @@
 {{- if (or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin")) -}}
+<#
+.SYNOPSIS
+    Chezmoi wrapper function with mode-aware authentication
+.DESCRIPTION
+    Provides a unified chezmoi wrapper that handles authentication based on the configured mode:
+    - pmode/oagmode: Uses Bitwarden for authentication
+    - ptxmode: Uses 1Password for authentication
+.PARAMETER args
+    Arguments to pass to the chezmoi command
+.EXAMPLE
+    cz apply
+    cz diff
+    cz edit ~/.gitconfig
+.NOTES
+    Author: Patrick Lewis
+    Requires: Bitwarden CLI (for pmode/oagmode) or 1Password CLI (for ptxmode)
+#>
+
 {{- if (or (eq .pmode true) (eq .oagmode true)) }}
 function cz {
-    $env:BW_SESSION = $(bw unlock --raw) 
-    chezmoi $args
+    [CmdletBinding()]
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string[]]$args
+    )
+    
+    try {
+        # Ensure Bitwarden session is available
+        if (-not $env:BW_SESSION) {
+            Write-Host "Authenticating with Bitwarden..." -ForegroundColor Yellow
+            $env:BW_SESSION = $(bw unlock --raw)
+            
+            if (-not $env:BW_SESSION) {
+                throw "Failed to authenticate with Bitwarden"
+            }
+            Write-Verbose "Bitwarden session established"
+        }
+        
+        # Execute chezmoi with provided arguments
+        chezmoi @args
+    }
+    catch {
+        Write-Error "Failed to execute chezmoi: $($_.Exception.Message)"
+        return
+    }
 }
 {{- else if eq .ptxmode true }}
 function cz {
-    chezmoi $args
+    [CmdletBinding()]
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string[]]$args
+    )
+    
+    try {
+        # 1Password authentication is handled automatically by the CLI
+        # Execute chezmoi with provided arguments
+        chezmoi @args
+    }
+    catch {
+        Write-Error "Failed to execute chezmoi: $($_.Exception.Message)"
+        return
+    }
+}
+{{- else }}
+# Default chezmoi wrapper without password manager integration
+function cz {
+    [CmdletBinding()]
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string[]]$args
+    )
+    
+    try {
+        chezmoi @args
+    }
+    catch {
+        Write-Error "Failed to execute chezmoi: $($_.Exception.Message)"
+        return
+    }
 }
 {{- end }}
 {{- end }}
