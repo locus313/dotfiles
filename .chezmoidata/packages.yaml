@@ -7,6 +7,8 @@ packages:
       - obsidian
       - direnv
       - powershell
+      - eza
+      - fzf
   linux:
     dnfs:
       - epel-release
