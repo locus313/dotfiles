@@ -104,6 +104,7 @@ extensions:
       - emmanuelbeziat.vscode-great-icons
       - redhat.vscode-xml
       - redhat.vscode-yaml
+      - ms-vscode.PowerShell
   linux:
     vscode:
       - mhutchie.git-graph
@@ -126,3 +127,4 @@ extensions:
       - GitHub.copilot
       - GitHub.copilot-chat
       - codezombiech.gitignore
+      - ms-vscode.PowerShell
