@@ -19,7 +19,7 @@ Host github-oag.com
   {{- if ne .chezmoi.os "windows" }}
   IdentityAgent ~/.bitwarden-ssh-agent.sock
   {{- end }}
-Host *
+Host [0-9]*.[0-9]*.[0-9]*.[0-9]*
   Port 22
   PreferredAuthentications publickey
   IdentityFile ~/.ssh/ed25519.pub
