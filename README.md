@@ -65,7 +65,7 @@ During initial setup, you'll be prompted to select operational modes that contro
 | [dot_bash_aliases.tmpl](dot_bash_aliases.tmpl) | `~/.bash_aliases` | Bash aliases and shortcuts |
 | [dot_profile.tmpl](dot_profile.tmpl) | `~/.profile` | Shell-agnostic profile configuration |
 | [dot_zprofile.tmpl](dot_zprofile.tmpl) | `~/.zprofile` | Zsh profile configuration |
-| [dot_tfswitch.toml.tmpl](dot_tfswitch.toml.tmpl) | `~/.tfswitch.toml` | Terraform version switching configuration |
+| [dot_terraform-version.tmpl](dot_terraform-version.tmpl) | `~/.terraform-version` | Terraform version configuration for tfenv |
 
 ### PowerShell Configurations
 

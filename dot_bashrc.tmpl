@@ -122,6 +122,11 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
+# tfenv setup
+if [ -d "$HOME/.local/bin/tfenv" ] ; then
+    PATH="$HOME/.local/bin/tfenv/bin:$PATH"
+fi
+
 {{- if or .pmode .oagmode }}
 # Bitwarden SSH agent for pmode and oagmode
 if [ -d "$HOME/.var/app/com.bitwarden.desktop/data" ] ; then

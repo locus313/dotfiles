@@ -26,6 +26,11 @@ fi
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
+
+# tfenv setup
+if [ -d "$HOME/.local/bin/tfenv" ] ; then
+    PATH="$HOME/.local/bin/tfenv/bin:$PATH"
+fi
 {{- if .wsl }}
 # oh-my-posh
 eval "$(oh-my-posh init bash --config ~/.poshthemes/night-owl.omp.json)"

@@ -25,6 +25,13 @@
     executable = true
     refreshPeriod = "168h"
 
+# Terraform version manager
+[".local/bin/tfenv"]
+    type = "archive"
+    url = "https://github.com/tfutils/tfenv/archive/refs/heads/master.zip"
+    refreshPeriod = "168h"
+    stripComponents = 1
+
 # WSL-specific tools
 [".local/bin/host-spawn"]
     type = "file"

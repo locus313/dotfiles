@@ -9,6 +9,11 @@ if [ -d "$HOME/.local/bin" ]; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
+# tfenv setup
+if [ -d "$HOME/.local/bin/tfenv" ]; then
+    PATH="$HOME/.local/bin/tfenv/bin:$PATH"
+fi
+
 # set PATH so it includes Visual Studio Code (code) bin if it exists
 if [ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]; then
     PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
