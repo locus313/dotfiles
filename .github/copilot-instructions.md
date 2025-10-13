@@ -25,6 +25,14 @@ This is a cross-platform dotfiles management system using [chezmoi](https://chez
 1. `.chezmoi.toml.tmpl` prompts for user data (email, name, modes)
 2. Mode flags control which features/scripts are enabled
 3. Templates consume this data via `{{ .email }}`, `{{ .pmode }}`, etc.
+4. `.chezmoidata/packages.yaml` provides package lists consumed by install scripts
+5. Pre-hooks automatically install password managers before source state reads
+
+### Chezmoi Scripts and Hooks Structure
+- `.chezmoiscripts/{platform}/` - Platform-specific installation scripts
+- `.chezmoihooks/` - Lifecycle hooks (pre-read-source-state for password managers)
+- `run_onchange_` prefix ensures scripts only run when templates/data change
+- `run_once_` prefix for one-time setup scripts
 
 ## Essential Developer Workflows
 
@@ -55,10 +63,17 @@ This is a cross-platform dotfiles management system using [chezmoi](https://chez
 - Script sourcing from `~/Scripts/PowerShell/` directory
 - Git shortcuts (`gs`, `ga`, `gc`, `gp`) in `githelpers.ps1.tmpl`
 
+### Package Management System
+- `.chezmoidata/packages.yaml` defines packages for each platform (winget, brew, dnf, apt)
+- Mode-specific packages in nested sections (e.g., `packages.windows.pmode.winget`)
+- Installation scripts in `.chezmoiscripts/{platform}/` execute based on changes
+- Package installation uses `run_onchange_` prefix for conditional execution
+
 ### External Dependencies
 - `.chezmoiexternal.toml` manages binary downloads (oh-my-posh, direnv, aws-vault)
 - Refresh period of 168h (weekly) for external tools
 - Platform-specific binary selection using `{{ .chezmoi.arch }}`
+- Architecture variables: `amd64`, `arm64`, `386` for cross-platform binaries
 
 ## Critical Integration Points
 
