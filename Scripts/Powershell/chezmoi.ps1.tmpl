@@ -54,7 +54,24 @@ function cz {
     )
     
     try {
-        # 1Password authentication is handled automatically by the CLI
+        # Check if 1Password CLI is authenticated
+        $opStatus = op account list 2>&1
+        
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Not signed in to 1Password. Please sign in..." -ForegroundColor Yellow
+            
+            # Attempt to sign in to 1Password
+            # For 1Password CLI v2, this will use biometric unlock or prompt for credentials
+            op signin
+            
+            if ($LASTEXITCODE -ne 0) {
+                throw "Failed to authenticate with 1Password"
+            }
+            Write-Verbose "1Password authentication successful"
+        } else {
+            Write-Verbose "Already authenticated with 1Password"
+        }
+        
         # Execute chezmoi with provided arguments
         chezmoi @args
     }
