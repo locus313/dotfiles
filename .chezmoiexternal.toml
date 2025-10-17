@@ -30,7 +30,7 @@
     url = "https://github.com/ekristen/aws-nuke/releases/download/v3.60.1/aws-nuke-v3.60.1-{{ .chezmoi.os }}-{{ .chezmoi.arch }}.tar.gz"
     executable = true
     refreshPeriod = "168h"
-    path = "./aws-nuke"
+    path = "aws-nuke"
 
 # Terraform version manager
 [".local/bin/tfenv"]
