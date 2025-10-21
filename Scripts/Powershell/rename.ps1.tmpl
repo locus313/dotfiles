@@ -28,10 +28,7 @@ function Rename-PlayOnCloudRecordings {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter()]
-        [string]$Path = "$env:USERPROFILE\Videos\PlayOn Cloud Recordings",
-        
-        [Parameter()]
-        [switch]$WhatIf
+        [string]$Path = "$env:USERPROFILE\Videos\PlayOn Cloud Recordings"
     )
     
     try {
