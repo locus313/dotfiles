@@ -9,7 +9,7 @@
     These functions wrap common git commands with PowerShell best practices
 #>
 
-# Git status shortcut
+# Git status shortcut with lazy posh-git loading
 function gs { 
     <#
     .SYNOPSIS
@@ -20,12 +20,10 @@ function gs {
     [CmdletBinding()]
     param()
     
-    try {
-        git status
+    if (Get-Command Enable-PoshGit -ErrorAction SilentlyContinue) {
+        Enable-PoshGit
     }
-    catch {
-        Write-Error "Failed to get git status: $($_.Exception.Message)"
-    }
+    git status
 }
 
 # Git add shortcut with improved parameter handling
@@ -48,12 +46,10 @@ function ga {
     )
     
     process {
-        try {
-            git add @Path
+        if (Get-Command Enable-PoshGit -ErrorAction SilentlyContinue) {
+            Enable-PoshGit
         }
-        catch {
-            Write-Error "Failed to add files to git: $($_.Exception.Message)"
-        }
+        git add @Path
     }
 }
 
@@ -75,12 +71,10 @@ function gc {
         [string]$Message
     )
     
-    try {
-        git commit -m $Message
+    if (Get-Command Enable-PoshGit -ErrorAction SilentlyContinue) {
+        Enable-PoshGit
     }
-    catch {
-        Write-Error "Failed to create git commit: $($_.Exception.Message)"
-    }
+    git commit -m $Message
 }
 
 # Git push shortcut with flexible parameters
@@ -108,15 +102,14 @@ function gp {
         [string]$Branch
     )
     
-    try {
-        if ($Branch) {
-            git push $Remote $Branch
-        } else {
-            git push
-        }
+    if (Get-Command Enable-PoshGit -ErrorAction SilentlyContinue) {
+        Enable-PoshGit
     }
-    catch {
-        Write-Error "Failed to push to git remote: $($_.Exception.Message)"
+    
+    if ($Branch) {
+        git push $Remote $Branch
+    } else {
+        git push
     }
 }
 

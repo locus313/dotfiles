@@ -436,13 +436,11 @@ function ll {
         [string]$Path = "."
     )
     
-    try {
-        Get-ChildItem -Path $Path -Force | 
-            Select-Object Mode, LastWriteTime, Length, Name | 
-            Format-Table -AutoSize
+    if (Get-Command Enable-TerminalIcons -ErrorAction SilentlyContinue) {
+        Enable-TerminalIcons
     }
-    catch {
-        Write-Error "Failed to list directory '$Path': $($_.Exception.Message)"
-    }
+    Get-ChildItem -Path $Path -Force | 
+        Select-Object Mode, LastWriteTime, Length, Name | 
+        Format-Table -AutoSize
 }
 {{- end }}

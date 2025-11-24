@@ -9,7 +9,7 @@
     Requires: PSReadLine module
 #>
 
-try {
+if (Get-Module -Name PSReadLine) {
     # Configure prediction view style
     Set-PSReadLineOption -PredictionViewStyle ListView
     
@@ -38,10 +38,5 @@ try {
     
     # Ctrl+D to exit PowerShell (like bash)
     Set-PSReadLineKeyHandler -Key Ctrl+d -Function DeleteCharOrExit
-    
-    Write-Verbose "PSReadLine configuration loaded successfully"
-}
-catch {
-    Write-Warning "Failed to configure PSReadLine: $($_.Exception.Message)"
 }
 {{- end }}

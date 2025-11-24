@@ -117,9 +117,9 @@ Automatic installation and authentication handling based on your selected mode:
 
 ### Modern Shell Experience
 - **oh-my-posh**: Beautiful, fast prompt with night-owl theme
-- **PowerShell modules**: posh-git, Terminal-Icons, PsReadLine auto-installation
-- **Tab completion**: Azure CLI and other tools
-- **Git helpers**: Convenient shortcuts (`gs`, `ga`, `gc`, `gp`)
+- **PowerShell modules**: posh-git, Terminal-Icons, PsReadLine with lazy loading for fast startup (<700ms)
+- **Tab completion**: Azure CLI and other tools (deferred registration on first use)
+- **Git helpers**: Convenient shortcuts (`gs`, `ga`, `gc`, `gp`) with automatic posh-git loading
 
 ### External Tool Management
 Automated download and updates (weekly refresh) of essential tools:

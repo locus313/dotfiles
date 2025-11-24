@@ -63,6 +63,18 @@ This is a cross-platform dotfiles management system using [chezmoi](https://chez
 - Script sourcing from `~/Scripts/PowerShell/` directory
 - Git shortcuts (`gs`, `ga`, `gc`, `gp`) in `githelpers.ps1.tmpl`
 
+#### PowerShell Profile Performance Guidelines
+**CRITICAL**: Keep profile loading time under 700ms. Follow these patterns:
+- **Lazy Loading**: Only load PSReadLine immediately; defer posh-git and Terminal-Icons
+  - Use `Import-ModuleLazy` function for deferred module installation/import
+  - Create `Enable-PoshGit` and `Enable-TerminalIcons` functions called on first use
+- **Deferred Completions**: Register tab completers (Azure CLI, etc.) on first command use, not at startup
+- **Minimal Error Handling**: Avoid try-catch blocks in hot paths; use simple conditionals
+- **Direct Assignments**: Skip unnecessary wrapping (e.g., `[Console]::OutputEncoding = [Text.Encoding]::UTF8`)
+- **Function-Level Loading**: Trigger lazy loads inside command functions (gs, ga, gc, gp, ll)
+- **Attribute Syntax**: Always place `[CmdletBinding()]` immediately before `param()` block
+- **Streamlined Loops**: Use simple array iteration for script loading, not hashtable iterations with verbose logging
+
 ### Package Management System
 - `.chezmoidata/packages.yaml` defines packages for each platform (winget, brew, dnf, apt)
 - Mode-specific packages in nested sections (e.g., `packages.windows.pmode.winget`)
@@ -98,3 +110,4 @@ This is a cross-platform dotfiles management system using [chezmoi](https://chez
 - New features should respect the mode system - add mode checks where appropriate
 - External tool updates go in `.chezmoiexternal.toml` with proper platform conditionals
 - PowerShell scripts need Windows OS guards: `{{- if eq .chezmoi.os "windows" -}}`
+- **Performance testing**: Run `Measure-Command { . $PROFILE }` after PowerShell profile changes to verify load time stays under 700ms

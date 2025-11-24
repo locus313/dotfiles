@@ -8,66 +8,66 @@
 .NOTES
     Author: Patrick Lewis
     Mode System: pmode (Personal), oagmode (Enterprise), ptxmode (Corporate)
+    Optimized for fast loading with lazy initialization
 #>
 
 # Set UTF-8 encoding for better compatibility
 # https://ohmyposh.dev/docs/faq#my-prompt-is-broken-after-upgrading-to-powershell-74
-try {
-    [Console]::OutputEncoding = [Text.Encoding]::UTF8
-}
-catch {
-    Write-Warning "Failed to set UTF-8 encoding: $($_.Exception.Message)"
-}
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
 
 # Initialize oh-my-posh with night-owl theme
-try {
-    if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 {{- if eq .chezmoi.os "darwin" }}
-        $themePath = "$(brew --prefix oh-my-posh)/themes/night-owl.omp.json"
+    $themePath = "$(brew --prefix oh-my-posh)/themes/night-owl.omp.json"
 {{- else }}
-        $themePath = "$env:POSH_THEMES_PATH\night-owl.omp.json"
+    $themePath = "$env:POSH_THEMES_PATH\night-owl.omp.json"
 {{- end }}
-        if (Test-Path $themePath) {
-            oh-my-posh init pwsh --config $themePath | Invoke-Expression
-            Write-Verbose "oh-my-posh initialized with night-owl theme"
-        } else {
-            Write-Warning "oh-my-posh theme not found at: $themePath"
-            oh-my-posh init pwsh | Invoke-Expression
-        }
+    if (Test-Path $themePath) {
+        oh-my-posh init pwsh --config $themePath | Invoke-Expression
     } else {
-        Write-Warning "oh-my-posh not found. Please install it to enable enhanced prompt."
-    }
-}
-catch {
-    Write-Warning "Failed to initialize oh-my-posh: $($_.Exception.Message)"
-}
-
-# Install and import required PowerShell modules
-$requiredModules = @(
-    @{ Name = "posh-git"; Description = "Git integration for PowerShell" },
-    @{ Name = "Terminal-Icons"; Description = "File and folder icons in terminal" },
-    @{ Name = "PsReadLine"; Description = "Enhanced command line editing" }
-)
-
-foreach ($moduleInfo in $requiredModules) {
-    $moduleName = $moduleInfo.Name
-    try {
-        if (-not (Get-Module -ListAvailable -Name $moduleName -ErrorAction SilentlyContinue)) {
-            Write-Host "Installing module: $moduleName ($($moduleInfo.Description))" -ForegroundColor Yellow
-            Install-Module -Name $moduleName -Scope CurrentUser -Force -SkipPublisherCheck -AllowClobber
-        }
-        
-        Import-Module -Name $moduleName -ErrorAction SilentlyContinue
-        Write-Verbose "Successfully imported module: $moduleName"
-    }
-    catch {
-        Write-Warning "Failed to install or import module '$moduleName': $($_.Exception.Message)"
+        oh-my-posh init pwsh | Invoke-Expression
     }
 }
 
-# Configure Azure CLI tab completion
-try {
-    if (Get-Command az -ErrorAction SilentlyContinue) {
+# Function to lazy-load modules on first use
+function Import-ModuleLazy {
+    param(
+        [string]$ModuleName,
+        [string]$Description
+    )
+    
+    if (-not (Get-Module -ListAvailable -Name $ModuleName -ErrorAction SilentlyContinue)) {
+        Write-Host "Installing $ModuleName..." -ForegroundColor Yellow
+        Install-Module -Name $ModuleName -Scope CurrentUser -Force -SkipPublisherCheck -AllowClobber -ErrorAction SilentlyContinue
+    }
+    Import-Module -Name $ModuleName -ErrorAction SilentlyContinue
+}
+
+# Import only essential modules immediately (PSReadLine for better UX)
+Import-ModuleLazy -ModuleName "PsReadLine" -Description "Enhanced command line editing"
+
+# Lazy-load posh-git on first git command
+$global:__poshGitLoaded = $false
+function Enable-PoshGit {
+    if (-not $global:__poshGitLoaded) {
+        Import-ModuleLazy -ModuleName "posh-git" -Description "Git integration"
+        $global:__poshGitLoaded = $true
+    }
+}
+
+# Lazy-load Terminal-Icons on first directory listing
+$global:__terminalIconsLoaded = $false
+function Enable-TerminalIcons {
+    if (-not $global:__terminalIconsLoaded) {
+        Import-ModuleLazy -ModuleName "Terminal-Icons" -Description "File icons"
+        $global:__terminalIconsLoaded = $true
+    }
+}
+
+# Defer Azure CLI tab completion registration (only register if az command is used)
+$global:__azCompletionRegistered = $false
+function Register-AzCompletion {
+    if (-not $global:__azCompletionRegistered -and (Get-Command az -ErrorAction SilentlyContinue)) {
         Register-ArgumentCompleter -Native -CommandName az -ScriptBlock {
             param($commandName, $wordToComplete, $cursorPosition)
             
@@ -87,16 +87,12 @@ try {
                 [System.Management.Automation.CompletionResult]::new($_, $_, "ParameterValue", $_)
             }
             
-            # Clean up environment variables
             Remove-Item $completion_file, Env:\_ARGCOMPLETE_STDOUT_FILENAME, Env:\ARGCOMPLETE_USE_TEMPFILES, Env:\COMP_LINE, Env:\COMP_POINT, Env:\_ARGCOMPLETE, Env:\_ARGCOMPLETE_SUPPRESS_SPACE, Env:\_ARGCOMPLETE_IFS, Env:\_ARGCOMPLETE_SHELL -ErrorAction SilentlyContinue
             
             return $completions
         }
-        Write-Verbose "Azure CLI tab completion configured"
+        $global:__azCompletionRegistered = $true
     }
-}
-catch {
-    Write-Warning "Failed to configure Azure CLI tab completion: $($_.Exception.Message)"
 }
 
 # Load PowerShell script modules
@@ -106,36 +102,19 @@ $scriptPath = "$env:HOME/Scripts/PowerShell"
 $scriptPath = "$env:USERPROFILE/Scripts/PowerShell"
 {{- end }}
 
-$coreScriptFiles = @(
-    @{ Name = "chezmoi.ps1"; Description = "Chezmoi wrapper functions" },
-    @{ Name = "githelpers.ps1"; Description = "Git shortcut functions" },
-    @{ Name = "linuxlike.ps1"; Description = "Linux-like utility functions" },
-    @{ Name = "psreadline.ps1"; Description = "PSReadLine configuration" },
-    @{ Name = "utils.ps1"; Description = "General utility functions" }
-)
+# Core scripts to load immediately
+$coreScripts = @("psreadline.ps1", "chezmoi.ps1", "githelpers.ps1", "linuxlike.ps1", "utils.ps1")
 
-# Add mode-specific scripts
-$modeSpecificScripts = @()
 {{- if eq .pmode true }}
-$modeSpecificScripts += @{ Name = "rename.ps1"; Description = "File renaming utilities (Personal mode)" }
+# Add mode-specific scripts
+$coreScripts += "rename.ps1"
 {{- end }}
 
-$allScripts = $coreScriptFiles + $modeSpecificScripts
-
-foreach ($scriptInfo in $allScripts) {
-    $scriptName = $scriptInfo.Name
+# Load scripts with minimal error handling overhead
+foreach ($scriptName in $coreScripts) {
     $fullPath = Join-Path $scriptPath $scriptName
-    
     if (Test-Path $fullPath) {
-        try {
-            . $fullPath
-            Write-Verbose "Successfully loaded script: $scriptName"
-        }
-        catch {
-            Write-Warning "Failed to source script '$scriptName': $($_.Exception.Message)"
-        }
-    } else {
-        Write-Warning "Script not found: $fullPath"
+        . $fullPath
     }
 }
 
@@ -148,26 +127,12 @@ $helperScriptPath = "$env:USERPROFILE\code\helper-scripts\powershell\Microsoft.P
 {{- end }}
 
 if (Test-Path $helperScriptPath) {
-    try {
-        . $helperScriptPath
-        Write-Verbose "Successfully loaded Enterprise helper script"
-    }
-    catch {
-        Write-Warning "Failed to source Enterprise helper script: $($_.Exception.Message)"
-    }
-} else {
-    Write-Verbose "Enterprise helper script not found (this is normal if not in Enterprise mode): $helperScriptPath"
+    . $helperScriptPath
 }
 {{- end }}
 
 # Configure environment variables
-try {
-    $env:XDG_CONFIG_HOME = "$env:USERPROFILE\.config"
-    Write-Verbose "XDG_CONFIG_HOME set to: $env:XDG_CONFIG_HOME"
-}
-catch {
-    Write-Warning "Failed to set XDG_CONFIG_HOME: $($_.Exception.Message)"
-}
+$env:XDG_CONFIG_HOME = "$env:USERPROFILE\.config"
 
 # Direnv hook (commented out - enable if needed)
 # if (Test-Path "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\direnv.direnv_Microsoft.Winget.Source_8wekyb3d8bbwe\direnv.exe") {
