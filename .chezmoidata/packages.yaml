@@ -82,6 +82,7 @@ packages:
           - Plex.Plex
           - Synology.SynologyDriveClient
           - Tailscale.Tailscale
+          - OpenJS.NodeJS.LTS
      ptxmode:
         winget:
           - 1password-cli
