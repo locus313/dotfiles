@@ -101,3 +101,12 @@
     include = ["*/dist/**"]
 
 {{- end }}
+
+{{- if eq .chezmoi.os "windows" }}
+# oh-my-posh themes
+[".poshthemes"]
+    type = "archive"
+    url = "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip"
+    refreshPeriod = "168h"
+    exact = true
+{{- end }}

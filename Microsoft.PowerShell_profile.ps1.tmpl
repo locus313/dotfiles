@@ -20,6 +20,8 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 {{- if eq .chezmoi.os "darwin" }}
     $themePath = "$(brew --prefix oh-my-posh)/themes/night-owl.omp.json"
 {{- else }}
+    # POSH_THEMES_PATH is not set by the Windows Store install — fall back to chezmoi-managed themes dir
+    if (-not $env:POSH_THEMES_PATH) { $env:POSH_THEMES_PATH = "$env:USERPROFILE\.poshthemes" }
     $themePath = "$env:POSH_THEMES_PATH\night-owl.omp.json"
 {{- end }}
     if (Test-Path $themePath) {
