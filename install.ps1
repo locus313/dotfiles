@@ -1,5 +1,13 @@
 Write-Host "Installing dotfiles using chezmoi..." -ForegroundColor Green
 
+# Trust PSGallery to suppress untrusted repository prompts
+if (Get-Command Set-PSResourceRepository -ErrorAction SilentlyContinue) {
+    Set-PSResourceRepository -Name "PSGallery" -Trusted
+}
+if (Get-PSRepository -Name "PSGallery" -ErrorAction SilentlyContinue) {
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+}
+
 # Check and install required tools
 $requiredTools = @(
     @{Name = "chezmoi"; Package = "twpayne.chezmoi"}
