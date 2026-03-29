@@ -81,6 +81,7 @@ packages:
           - GuinpinSoft.MakeMKV
           - Plex.Plex
           - Synology.SynologyDriveClient
+          - Tailscale.Tailscale
      ptxmode:
         winget:
           - 1password-cli
