@@ -80,6 +80,7 @@ packages:
           - xpipe-io.xpipe
           - GuinpinSoft.MakeMKV
           - Plex.Plex
+          - Synology.SynologyDriveClient
      ptxmode:
         winget:
           - 1password-cli
