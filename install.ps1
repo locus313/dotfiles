@@ -8,10 +8,24 @@ $requiredTools = @(
     @{Name = "wt"; Package = "Microsoft.WindowsTerminal"}
 )
 
-# Install CaskaydiaCove Nerd Font
+# Install CaskaydiaCove Nerd Font from GitHub releases (not available in winget)
 Write-Host "Installing CaskaydiaCove Nerd Font..." -ForegroundColor Yellow
 try {
-    winget install --source winget --accept-package-agreements --accept-source-agreements "ryanoasis.cascadia-code"
+    $fontZipPath = Join-Path $env:TEMP "CascadiaCode.zip"
+    $fontExtractPath = Join-Path $env:TEMP "CascadiaCodeNerd"
+    $fontDestDir = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Fonts"
+
+    Invoke-WebRequest -Uri "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip" -OutFile $fontZipPath
+    Expand-Archive -Path $fontZipPath -DestinationPath $fontExtractPath -Force
+    New-Item -ItemType Directory -Force -Path $fontDestDir | Out-Null
+
+    Get-ChildItem -Path $fontExtractPath -Filter "*.ttf" | ForEach-Object {
+        Copy-Item -Path $_.FullName -Destination (Join-Path $fontDestDir $_.Name) -Force
+        New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" `
+            -Name "$($_.BaseName) (TrueType)" -Value (Join-Path $fontDestDir $_.Name) -Force | Out-Null
+    }
+
+    Remove-Item $fontZipPath, $fontExtractPath -Recurse -Force -ErrorAction SilentlyContinue
     Write-Host "CaskaydiaCove Nerd Font installed successfully!" -ForegroundColor Green
 }
 catch {
