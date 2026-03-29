@@ -73,6 +73,7 @@ packages:
      pmode:
         winget:
           - Bitwarden.CLI
+          - Mozilla.Firefox
           - Discord.Discord
           - Valve.Steam
           - xpipe-io.xpipe
