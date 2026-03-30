@@ -83,6 +83,7 @@ packages:
           - Synology.SynologyDriveClient
           - Tailscale.Tailscale
           - OpenJS.NodeJS.LTS
+          - TheDocumentFoundation.LibreOffice
      ptxmode:
         winget:
           - 1password-cli
