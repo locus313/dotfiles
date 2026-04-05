@@ -8,13 +8,23 @@ fi
 
 echo "[-] Updating packages [-]"
 
-{{- if eq .chezmoi.os "darwin" }}
-echo "[-] Updating brews [-]"
+echo "[-] Installing brews [-]"
 {{ range .packages.darwin.brews -}}
-brew install  {{ . | quote }}
+brew install {{ . | quote }}
 {{ end -}}
-{{ range .extensions.darwin.vscode }}
-code --force --install-extension {{ . | quote }}
-{{ end }}
+
+echo "[-] Installing casks [-]"
+{{ range .packages.darwin.casks -}}
+brew install --cask {{ . | quote }}
+{{ end -}}
+
+echo "[-] Installing VS Code extensions [-]"
+{{ range .extensions.darwin.vscode -}}
+if ! code --list-extensions | grep -qF {{ . | quote }}; then
+    echo "Installing extension {{ . }}..."
+    code --force --install-extension {{ . | quote }}
+else
+    echo "Extension already installed: {{ . }}"
+fi
 {{ end -}}
 {{ end -}}

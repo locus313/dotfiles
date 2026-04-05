@@ -1,36 +1,65 @@
 {{ if eq .chezmoi.os "windows" -}}
+$ErrorActionPreference = 'Continue'
+
+# Helper: install a winget package only if not already present
+function Install-WingetPackage {
+    param(
+        [string]$Id,
+        [string]$Source = "winget"
+    )
+    winget list --id $Id -e --accept-source-agreements | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Already installed: $Id" -ForegroundColor Green
+    } else {
+        Write-Host "Installing: $Id..." -ForegroundColor Yellow
+        winget install --source $Source --accept-package-agreements --uninstall-previous $Id
+    }
+}
+
+# Install PowerShell modules
 {{ range .packages.windows.powershell -}}
-Install-PSResource {{ . | quote }} -Scope CurrentUser
+if (-not (Get-InstalledPSResource {{ . | quote }} -ErrorAction SilentlyContinue)) {
+    Write-Host "Installing PS module: {{ . }}..." -ForegroundColor Yellow
+    Install-PSResource {{ . | quote }} -Scope CurrentUser -TrustRepository
+} else {
+    Write-Host "PS module already installed: {{ . }}" -ForegroundColor Green
+}
 {{ end -}}
 
+# Core winget packages
 {{ range .packages.windows.winget -}}
-winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
+Install-WingetPackage -Id {{ . | quote }}
 {{ end -}}
 
 {{ if eq .ptxmode true }}
 {{ range .packages.windows.ptxmode.winget -}}
-winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
+Install-WingetPackage -Id {{ . | quote }}
 {{ end -}}
 {{ end }}
 
 {{ if eq .pmode true }}
 {{ range .packages.windows.pmode.winget -}}
-winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
+Install-WingetPackage -Id {{ . | quote }}
 {{ end -}}
 {{ end }}
 
 {{ if eq .oagmode true }}
 {{ range .packages.windows.oagmode.winget -}}
-winget install --source winget --accept-package-agreements --uninstall-previous {{ . | quote }}
+Install-WingetPackage -Id {{ . | quote }}
 {{ end -}}
 {{ end }}
 
 {{ range .packages.windows.msstore -}}
-winget install --source msstore --accept-package-agreements --uninstall-previous {{ . | quote }}
+Install-WingetPackage -Id {{ . | quote }} -Source "msstore"
 {{ end -}}
 
-{{ range .extensions.windows.vscode }}
-code --force --install-extension {{ . | quote }}
-{{ end }}
+{{ range .extensions.windows.vscode -}}
+if (-not (code --list-extensions | Select-String -SimpleMatch {{ . | quote }})) {
+    Write-Host "Installing VS Code extension: {{ . }}..." -ForegroundColor Yellow
+    code --force --install-extension {{ . | quote }}
+} else {
+    Write-Host "VS Code extension already installed: {{ . }}" -ForegroundColor Green
+}
+{{ end -}}
 
 {{ end -}}

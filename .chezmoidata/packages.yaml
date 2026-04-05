@@ -4,11 +4,16 @@ packages:
       - git
       - curl
       - jandedobbeleer/oh-my-posh/oh-my-posh
-      - obsidian
       - direnv
       - powershell
       - eza
       - fzf
+      - bat
+      - zoxide
+      - jq
+      - ncdu
+    casks:
+      - obsidian
   linux:
     dnfs:
       - epel-release
@@ -25,8 +30,8 @@ packages:
       - code
     apts:
       - git
-      - curl 
-      - bash 
+      - curl
+      - bash
       - zsh
       - bat
       - zoxide
