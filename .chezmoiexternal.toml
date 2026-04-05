@@ -27,7 +27,7 @@
 
 [".local/bin/aws-nuke"]
     type = "archive-file"
-    url = "https://github.com/ekristen/aws-nuke/releases/download/v3.60.1/aws-nuke-v3.60.1-{{ .chezmoi.os }}-{{ .chezmoi.arch }}.tar.gz"
+    url = "https://github.com/ekristen/aws-nuke/releases/download/{{ (gitHubLatestRelease "ekristen/aws-nuke").TagName }}/aws-nuke-{{ (gitHubLatestRelease "ekristen/aws-nuke").TagName }}-{{ .chezmoi.os }}-{{ .chezmoi.arch }}.tar.gz"
     executable = true
     refreshPeriod = "168h"
     path = "aws-nuke"
