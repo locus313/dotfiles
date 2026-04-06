@@ -14,6 +14,11 @@
     ptxmode = {{ $ptxmode }}
     wsl = {{ $wsl }}
 
+{{- if (or $pmode $oagmode) }}
+[bitwarden]
+    command = "{{ .chezmoi.homeDir }}/.local/bin/bw"
+{{- end }}
+
 [hooks.read-source-state.pre]
 {{- if eq .chezmoi.os "windows" }}
     command = "pwsh.exe"
