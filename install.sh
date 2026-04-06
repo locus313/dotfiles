@@ -4,6 +4,17 @@ set -e # Exit on error
 
 echo "Installing dotfiles using chezmoi..."
 
+# Ensure brew bin and ~/.local/bin are in PATH for non-login shells (e.g. `sh -c "$(curl ...)"`)
+# Without this, bw installed by the chezmoi hook is invisible to chezmoi's bitwardenFields calls.
+if [ "$(uname -s)" = "Darwin" ]; then
+    if [ -x "/opt/homebrew/bin/brew" ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x "/usr/local/bin/brew" ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi
+export PATH="$HOME/.local/bin:$PATH"
+
 if [ ! "$(command -v chezmoi)" ]; then
     echo "chezmoi not found, installing..."
     bin_dir="$HOME/.local/bin"
