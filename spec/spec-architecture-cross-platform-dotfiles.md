@@ -1,8 +1,8 @@
 ---
 title: Cross-Platform Dotfiles Management System Architecture
-version: 1.0
+version: 1.1
 date_created: 2025-08-24
-last_updated: 2025-08-24
+last_updated: 2026-04-05
 owner: Patrick Lewis (@locus313)
 tags: [architecture, infrastructure, chezmoi, dotfiles, cross-platform, templating]
 ---
@@ -36,6 +36,7 @@ This specification defines the architecture, requirements, and operational patte
 - **External Tool**: Third-party binary or tool managed via `.chezmoiexternal.toml`
 - **Hook**: Script executed at specific points in the chezmoi lifecycle
 - **Private File**: Configuration file excluded from version control (prefixed with `private_`)
+- **Flatpak**: A universal application distribution framework for Linux, used for installing sandboxed desktop applications
 
 ## 3. Requirements, Constraints & Guidelines
 
@@ -59,7 +60,7 @@ This specification defines the architecture, requirements, and operational patte
 
 - **PLT-001**: Windows installations MUST support both PowerShell 5.1 and PowerShell 7+
 - **PLT-002**: WSL environments MUST integrate with Windows OpenSSH for git operations
-- **PLT-003**: Linux installations MUST support multiple package managers (apt, yum, pacman)
+- **PLT-003**: Linux installations MUST support multiple package managers (apt for Debian/Ubuntu/Pop, dnf for Fedora/AlmaLinux) and Flatpak for desktop application packages
 - **PLT-004**: macOS installations MUST integrate with Homebrew package manager
 
 ### Template Requirements
@@ -105,16 +106,58 @@ data:
   wsl: boolean           # WSL environment detection (auto-calculated)
 ```
 
+### Package Data Schema
+
+```yaml
+# .chezmoidata/packages.yaml structure
+packages:
+  darwin:
+    brews: [...]          # Homebrew formula names
+    casks: [...]          # Homebrew cask names (GUI apps)
+  linux:
+    apts: [...]           # APT package names (Debian/Ubuntu/Pop)
+    dnfs: [...]           # DNF package names (Fedora/AlmaLinux)
+    flatpak: [...]        # Flatpak application IDs
+  windows:
+    powershell: [...]     # PowerShell module names (PSResource)
+    winget: [...]         # Winget package IDs
+    msstore: [...]        # Microsoft Store package IDs
+    pmode:
+      winget: [...]       # pmode-specific winget packages
+    oagmode:
+      winget: [...]       # oagmode-specific winget packages
+    ptxmode:
+      winget: [...]       # ptxmode-specific winget packages
+extensions:
+  darwin:
+    vscode: [...]         # VS Code extension IDs for macOS
+  linux:
+    vscode: [...]         # VS Code extension IDs for Linux
+  windows:
+    vscode: [...]         # VS Code extension IDs for Windows
+```
+
 ### External Tools Configuration
 
 ```toml
 # .chezmoiexternal.toml structure
 ["target-path"]
-  type = "file" | "archive"
+  type = "file" | "archive" | "archive-file"
   url = "https://..."
   executable = true | false
   refreshPeriod = "168h"
-  exact = true | false      # For archives only
+  exact = true | false        # For archive targets: enforce exact directory contents
+  stripComponents = 1         # Strip leading path components from archive entries
+  path = "binary-name"        # For archive-file: path to extract within the archive
+  include = ["*/subdir/**"]   # For archives: filter which entries to extract
+
+# Use gitHubLatestRelease to resolve the latest tag dynamically:
+["target-path"]
+  type = "archive-file"
+  url = "https://github.com/org/repo/releases/download/{{ (gitHubLatestRelease \"org/repo\").TagName }}/tool-{{ .chezmoi.os }}-{{ .chezmoi.arch }}.tar.gz"
+  executable = true
+  refreshPeriod = "168h"
+  path = "tool-binary-name"
 ```
 
 ### Installation Script Interface
@@ -213,13 +256,19 @@ cz <chezmoi-command> [args...]
 
 ### Third-Party Services
 - **SVC-001**: oh-my-posh releases - Prompt theming engine with cross-platform support
-- **SVC-002**: Nerd Fonts releases - Programming fonts with icon support for enhanced terminal experience
+- **SVC-002**: Nerd Fonts releases - Programming fonts with icon support for enhanced terminal experience (CascadiaCode)
 - **SVC-003**: direnv releases - Environment variable management for project-specific settings
 - **SVC-004**: aws-vault releases - AWS credential management and session handling
+- **SVC-005**: eza releases - Modern `ls` replacement with icons and git integration
+- **SVC-006**: tfenv releases - Terraform version manager for switching between Terraform versions
+- **SVC-007**: host-spawn releases - WSL utility for running commands on the Windows host
+- **SVC-008**: aws-nuke releases - AWS account resource cleanup tool
+- **SVC-009**: GTK theme archives - Dracula and Sweet-Dark-v40 themes for Linux desktop environments
+- **SVC-010**: Icon pack archives - Flatery-Indigo, Flatery-Indigo-Dark, and McMojave-cursors for Linux desktops
 
 ### Infrastructure Dependencies
 - **INF-001**: Internet connectivity - Required for initial installation and external tool updates
-- **INF-002**: Package managers - Platform-specific package managers (winget, apt, yum, brew) for dependency installation
+- **INF-002**: Package managers - Platform-specific package managers (winget, apt, dnf, flatpak, brew) for dependency installation
 - **INF-003**: Git - Version control system required for chezmoi source management
 
 ### Data Dependencies
