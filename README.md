@@ -72,7 +72,8 @@ During initial setup, you'll be prompted to select operational modes that contro
 | File | Target | Description |
 |------|--------|-------------|
 | [Microsoft.PowerShell_profile.ps1.tmpl](Microsoft.PowerShell_profile.ps1.tmpl) | PowerShell profile | Main PowerShell profile with UTF-8 encoding and oh-my-posh |
-| [Documents/PowerShell/Microsoft.PowerShell_profile.ps1.tmpl](Documents/PowerShell/Microsoft.PowerShell_profile.ps1.tmpl) | `~/Documents/PowerShell/` | Alternative PowerShell profile location |
+| [Documents/PowerShell/Microsoft.PowerShell_profile.ps1.tmpl](Documents/PowerShell/Microsoft.PowerShell_profile.ps1.tmpl) | `~/Documents/PowerShell/` | Alternative PowerShell profile location (Windows) |
+| [dot_config/powershell/profile.ps1.tmpl](dot_config/powershell/profile.ps1.tmpl) | `~/.config/powershell/profile.ps1` | PowerShell profile for macOS and Linux |
 
 ### PowerShell Helper Scripts
 
@@ -123,10 +124,16 @@ Automatic installation and authentication handling based on your selected mode:
 
 ### External Tool Management
 Automated download and updates (weekly refresh) of essential tools:
-- oh-my-posh (prompt theme engine)
+- oh-my-posh (prompt theme engine) + themes bundle
 - direnv (environment variable management)
 - aws-vault (AWS credential management)
-- Nerd Fonts (programming fonts with icons)
+- aws-nuke (AWS account cleanup)
+- eza (modern `ls` replacement)
+- tfenv (Terraform version manager)
+- host-spawn (WSL host process launcher)
+- Nerd Fonts / CascadiaCode (programming fonts with icons)
+- GTK themes: Dracula, Sweet-Dark-v40
+- Icon sets: Flatery-Indigo, Flatery-Indigo-Dark, McMojave-cursors
 
 ## Usage
 
