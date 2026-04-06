@@ -16,6 +16,7 @@ packages:
       - ansible-lint
     casks:
       - obsidian
+      - font-caskaydia-cove-nerd-font
   linux:
     dnfs:
       - epel-release
