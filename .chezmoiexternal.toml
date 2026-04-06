@@ -42,14 +42,14 @@
 # WSL-specific tools (WSL currently only runs on x86_64, but arch is parameterized for correctness)
 [".local/bin/host-spawn"]
     type = "file"
-    url = "https://github.com/1player/host-spawn/releases/latest/download/host-spawn-{{ if eq .chezmoi.arch \"amd64\" }}x86_64{{ else }}aarch64{{ end }}"
+    url = "https://github.com/1player/host-spawn/releases/latest/download/host-spawn-{{ if eq .chezmoi.arch `amd64` }}x86_64{{ else }}aarch64{{ end }}"
     executable = true
     refreshPeriod = "168h"
 
 # Modern ls replacement
 [".local/bin/eza"]
     type = "archive-file"
-    url = "https://github.com/eza-community/eza/releases/latest/download/eza_{{ if eq .chezmoi.arch \"amd64\" }}x86_64{{ else }}aarch64{{ end }}-unknown-linux-gnu.tar.gz"
+    url = "https://github.com/eza-community/eza/releases/latest/download/eza_{{ if eq .chezmoi.arch `amd64` }}x86_64{{ else }}aarch64{{ end }}-unknown-linux-gnu.tar.gz"
     executable = true
     refreshPeriod = "168h"
     path = "./eza"
