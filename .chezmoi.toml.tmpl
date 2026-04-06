@@ -23,14 +23,14 @@
 {{- if eq .chezmoi.os "windows" }}
     command = "pwsh.exe"
 {{- if (or ($pmode) ($oagmode)) }}
-    args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager-bw.ps1"]
+    args = ["-NoLogo", "{{ .chezmoi.homeDir }}/.local/share/chezmoi/.chezmoihooks/install-password-manager-bw.ps1"]
 {{- else if $ptxmode }}
-    args = ["-NoLogo", ".local/share/chezmoi/.chezmoihooks/install-password-manager-op.ps1"]
+    args = ["-NoLogo", "{{ .chezmoi.homeDir }}/.local/share/chezmoi/.chezmoihooks/install-password-manager-op.ps1"]
 {{- end }}
 {{- else }}
 {{- if $ptxmode }}
-    command = ".local/share/chezmoi/.chezmoihooks/install-password-manager-op.sh"
+    command = "{{ .chezmoi.homeDir }}/.local/share/chezmoi/.chezmoihooks/install-password-manager-op.sh"
 {{- else }}
-    command = ".local/share/chezmoi/.chezmoihooks/install-password-manager.sh"
+    command = "{{ .chezmoi.homeDir }}/.local/share/chezmoi/.chezmoihooks/install-password-manager.sh"
 {{- end }}
 {{- end }}
