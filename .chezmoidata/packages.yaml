@@ -12,6 +12,8 @@ packages:
       - zoxide
       - jq
       - ncdu
+      - ansible
+      - ansible-lint
     casks:
       - obsidian
   linux:
