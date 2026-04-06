@@ -50,6 +50,7 @@ else
     echo "{{ . }} is already installed"
 fi
 {{ end -}}
+{{- end }}
 
 {{- if not .wsl }}
 echo "[-] Installing VS Code extensions [-]"
@@ -63,7 +64,6 @@ fi
 {{ end }}
 {{- else }}
 echo "Skipping VS Code extensions on WSL (manage extensions through VS Code on Windows host)"
-{{- end }}
 {{- end }}
 
 echo "[-] Package installation completed [-]"
