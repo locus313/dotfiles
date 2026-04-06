@@ -39,11 +39,11 @@ function Get-PubIP {
     )
     
     $ipSources = @(
-        @{ Name = "ifconfig.me"; Url = "http://ifconfig.me/ip"; JsonProperty = $null },
-        @{ Name = "ipinfo.io"; Url = "http://ipinfo.io/ip"; JsonProperty = $null },
-        @{ Name = "icanhazip.com"; Url = "http://icanhazip.com"; JsonProperty = $null },
-        @{ Name = "ident.me"; Url = "http://ident.me"; JsonProperty = $null },
-        @{ Name = "httpbin.org"; Url = "http://httpbin.org/ip"; JsonProperty = "origin" }
+        @{ Name = "ifconfig.me"; Url = "https://ifconfig.me/ip"; JsonProperty = $null },
+        @{ Name = "ipinfo.io"; Url = "https://ipinfo.io/ip"; JsonProperty = $null },
+        @{ Name = "icanhazip.com"; Url = "https://icanhazip.com"; JsonProperty = $null },
+        @{ Name = "ident.me"; Url = "https://ident.me"; JsonProperty = $null },
+        @{ Name = "httpbin.org"; Url = "https://httpbin.org/ip"; JsonProperty = "origin" }
     )
     
     if ($All) {

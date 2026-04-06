@@ -1,5 +1,7 @@
 README.md
 install.sh
+spec
+.github
 
 {{ if (ne .chezmoi.os "windows") }}
 AppData

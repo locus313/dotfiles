@@ -33,9 +33,8 @@ Host [0-9]*.[0-9]*.[0-9]*.[0-9]*
   {{- end }}
 {{- end }}
 
-  {{- if eq .ptxmode true }}
-  # SSH over Session Manager
- host i-* mi-*
-     User ec2-user
-     ProxyCommand bash -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
- {{- end }}
+{{- if eq .ptxmode true }}
+Host i-* mi-*
+  User ec2-user
+  ProxyCommand bash -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+{{- end }}

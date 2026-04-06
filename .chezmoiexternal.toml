@@ -76,6 +76,8 @@
     exact = true
 
 # Icons
+# Note: both Flatery variants reference the same archive URL. chezmoi downloads
+# the archive once and caches it, so the duplicate URL does not cause a double download.
 [".icons/Flatery-Indigo"]
     type = "archive"
     url = "https://github.com/cbrnix/Flatery/archive/refs/tags/Flatery.zip"
