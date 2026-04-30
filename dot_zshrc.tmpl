@@ -24,4 +24,8 @@ fi
 # Configure SSH agent for Enterprise mode
 export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
 {{- end }}
+{{- if eq .ptxmode true }}
+# Configure SSH agent for 1Password
+export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+{{- end }}
 {{- end }}

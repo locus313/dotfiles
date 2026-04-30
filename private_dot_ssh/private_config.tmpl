@@ -11,6 +11,11 @@ Host github.com
   IdentityFile ~/.ssh/id_rsa.pub
   IdentityAgent ~/.bitwarden-ssh-agent.sock
   {{- end }}
+  {{- if eq .ptxmode true }}
+  # .pub file intentionally used: SSH selects the matching key from the 1Password agent.
+  IdentityFile ~/.ssh/id_rsa.pub
+  IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+  {{- end }}
   {{- end }}
 {{- if eq .oagmode true }}
 Host github-oag.com
