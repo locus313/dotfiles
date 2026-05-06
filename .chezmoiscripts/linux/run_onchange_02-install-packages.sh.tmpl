@@ -74,9 +74,9 @@ install_flatpak {{ . | quote }}
 {{- if not .wsl }}
 echo "[-] Installing VS Code extensions [-]"
 {{ range .extensions.linux.vscode }}
-if ! code --list-extensions | grep -q {{ . | quote }}; then
+if ! code --list-extensions | grep -qi {{ . | quote }}; then
     echo "Installing extension {{ . }}..."
-    code --force --install-extension {{ . | quote }}
+    code --install-extension {{ . | quote }}
 else
     echo "Extension {{ . }} is already installed"
 fi

@@ -143,7 +143,6 @@ extensions:
       - clemenspeters.format-json
       - codezombiech.gitignore
       - fnando.linter
-      - github.copilot-chat
       - hashicorp.terraform
       - mhutchie.git-graph
       - ms-azuretools.vscode-containers
