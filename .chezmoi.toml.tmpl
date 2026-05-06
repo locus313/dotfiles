@@ -3,6 +3,7 @@
 {{- $pmode := promptBoolOnce . "pmode" "Use pmode (Personal mode with Bitwarden)" -}}
 {{- $oagmode := promptBoolOnce . "oagmode" "Use oagmode (Enterprise mode with custom CA bundle and Bitwarden)" -}}
 {{- $ptxmode := promptBoolOnce . "ptxmode" "Use ptxmode (Corporate mode with 1Password)" -}}
+{{- $kde := promptBoolOnce . "kde" "Use KDE Plasma desktop environment (vs GNOME)" -}}
 
 {{- $wsl := (and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft")) -}}
 
@@ -12,6 +13,7 @@
     pmode = {{ $pmode }}
     oagmode = {{ $oagmode }}
     ptxmode = {{ $ptxmode }}
+    kde = {{ $kde }}
     wsl = {{ $wsl }}
 
 {{- if (or $pmode $oagmode) }}

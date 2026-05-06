@@ -42,14 +42,33 @@ fi
 
 {{- if (eq .chezmoi.osRelease.id "fedora" "pop") }}
 echo "[-] Installing Flatpak applications [-]"
+
+install_flatpak() {
+    if ! flatpak list | grep -q "$1"; then
+        echo "Installing $1..."
+        flatpak install -y "$1"
+    else
+        echo "$1 is already installed"
+    fi
+}
+
 {{ range .packages.linux.flatpak -}}
-if ! flatpak list | grep -q {{ . | quote }}; then
-    echo "Installing {{ . }}..."
-    flatpak install -y {{ . | quote }}
-else
-    echo "{{ . }} is already installed"
-fi
+install_flatpak {{ . | quote }}
 {{ end -}}
+
+{{- if (or (eq $.chezmoi.osRelease.id "pop") (not $.kde)) }}
+echo "[-] Installing GNOME Flatpak applications [-]"
+{{ range .packages.linux.flatpak_gnome -}}
+install_flatpak {{ . | quote }}
+{{ end -}}
+{{- end }}
+
+{{- if (and (eq $.chezmoi.osRelease.id "fedora") $.kde) }}
+echo "[-] Installing KDE Flatpak applications [-]"
+{{ range .packages.linux.flatpak_kde -}}
+install_flatpak {{ . | quote }}
+{{ end -}}
+{{- end }}
 {{- end }}
 
 {{- if not .wsl }}

@@ -53,14 +53,17 @@ packages:
       - com.synology.SynologyDrive
       - com.valvesoftware.Steam
       - dev.deedles.Trayscale
-      - io.missioncenter.MissionCenter
       - md.obsidian.Obsidian
       - org.flameshot.Flameshot
-      - org.gnome.Loupe
       - net.thunderbird.Thunderbird
       - org.remmina.Remmina
       - org.videolan.VLC
       - tv.plex.PlexDesktop
+      - io.missioncenter.MissionCenter
+    flatpak_gnome:
+      - org.gnome.Loupe
+    flatpak_kde:
+      - org.kde.gwenview
   windows:
      powershell:
        - Posh-Git

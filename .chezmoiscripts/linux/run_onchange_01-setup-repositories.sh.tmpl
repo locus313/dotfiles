@@ -23,6 +23,15 @@ if [ ! -f /etc/yum.repos.d/vscode.repo ]; then
 else
     echo "Visual Studio Code repository already configured"
 fi
+
+# Flathub remote setup
+if ! flatpak remotes | grep -q "^flathub"; then
+    echo "Adding Flathub remote..."
+    sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    echo "Flathub remote added successfully"
+else
+    echo "Flathub remote already configured"
+fi
 {{- else }}
 echo "Skipping VS Code repository setup on WSL (use VS Code on Windows host with WSL extension)"
 {{- end }}
@@ -59,6 +68,15 @@ Signed-By: /usr/share/keyrings/microsoft.gpg" | sudo tee /etc/apt/sources.list.d
     echo "Visual Studio Code repository configured successfully"
 else
     echo "Visual Studio Code repository already configured"
+fi
+
+# Flathub remote setup
+if ! flatpak remotes 2>/dev/null | grep -q "^flathub"; then
+    echo "Adding Flathub remote..."
+    sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    echo "Flathub remote added successfully"
+else
+    echo "Flathub remote already configured"
 fi
 {{- else }}
 echo "Skipping VS Code repository setup on WSL (use VS Code on Windows host with WSL extension)"
