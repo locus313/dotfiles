@@ -118,7 +118,6 @@ extensions:
       - mkhl.direnv
       - eamodio.gitlens
       - hashicorp.terraform
-      - GitHub.copilot
       - timonwong.shellcheck
       - emmanuelbeziat.vscode-great-icons
       - redhat.vscode-xml
@@ -131,7 +130,6 @@ extensions:
       - mkhl.direnv
       - eamodio.gitlens
       - hashicorp.terraform
-      - GitHub.copilot
       - timonwong.shellcheck
       - emmanuelbeziat.vscode-great-icons
       - redhat.vscode-xml
