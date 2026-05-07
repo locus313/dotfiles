@@ -85,5 +85,15 @@ fi
 echo "Skipping VS Code extensions on WSL (manage extensions through VS Code on Windows host)"
 {{- end }}
 
+{{- if eq .chezmoi.osRelease.id "fedora" }}
+echo "[-] Ensuring user is in the input group (Fedora) [-]"
+if ! groups "$(id -un)" | grep -qw input; then
+    sudo usermod -aG input "$(id -un)"
+    echo "Added $(id -un) to input group (re-login required for changes to take effect)"
+else
+    echo "$(id -un) is already in the input group"
+fi
+{{- end }}
+
 echo "[-] Package installation completed [-]"
 {{ end -}}
