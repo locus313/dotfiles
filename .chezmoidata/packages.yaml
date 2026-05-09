@@ -54,7 +54,6 @@ packages:
       - com.gitlab.davem.ClamTk
       - com.makemkv.MakeMKV
       - com.synology.SynologyDrive
-      - com.valvesoftware.Steam
       - dev.deedles.Trayscale
       - md.obsidian.Obsidian
       - org.flameshot.Flameshot
@@ -67,6 +66,11 @@ packages:
       - org.gnome.Loupe
     flatpak_kde:
       - org.kde.gwenview
+    pmode:
+      apts:
+        - steam-installer
+      dnfs:
+        - steam
   windows:
      powershell:
        - Posh-Git

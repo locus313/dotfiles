@@ -21,6 +21,21 @@ else
 fi
 {{- end }}
 {{ end -}}
+{{- if .pmode }}
+echo "[-] Installing pmode packages using DNF [-]"
+{{ range .packages.linux.pmode.dnfs -}}
+{{- if and (eq . "steam") $.wsl }}
+echo "Skipping {{ . }} on WSL (not supported in WSL environment)"
+{{- else }}
+if ! rpm -q {{ . | quote }} >/dev/null 2>&1; then
+    echo "Installing {{ . }}..."
+    sudo dnf install -y {{ . | quote }} || echo "Warning: Failed to install {{ . }}"
+else
+    echo "{{ . }} is already installed"
+fi
+{{- end }}
+{{ end -}}
+{{- end }}
 {{- end }}
 
 {{- if (eq .chezmoi.osRelease.id "debian" "ubuntu" "pop") }}
@@ -40,6 +55,21 @@ else
 fi
 {{- end }}
 {{ end -}}
+{{- if .pmode }}
+echo "[-] Installing pmode packages using APT [-]"
+{{ range .packages.linux.pmode.apts -}}
+{{- if and (eq . "steam-installer") $.wsl }}
+echo "Skipping {{ . }} on WSL (not supported in WSL environment)"
+{{- else }}
+if ! dpkg -l {{ . | quote }} >/dev/null 2>&1; then
+    echo "Installing {{ . }}..."
+    sudo apt install -y {{ . | quote }}
+else
+    echo "{{ . }} is already installed"
+fi
+{{- end }}
+{{ end -}}
+{{- end }}
 {{- end }}
 
 {{- if (eq .chezmoi.osRelease.id "fedora" "pop") }}
