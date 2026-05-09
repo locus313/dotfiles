@@ -11,4 +11,6 @@ Documents
 {{- if eq .chezmoi.os "linux" }}
 .fonts/.uuid
 .fonts/*/.uuid
+{{- else }}
+.local/share/flatpak
 {{- end }}

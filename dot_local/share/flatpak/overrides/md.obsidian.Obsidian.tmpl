@@ -1,0 +1,8 @@
+{{- if (and (eq .chezmoi.os "linux") (or .pmode .oagmode)) -}}
+[Context]
+sockets=!ssh-auth
+filesystems=~/.var/app/com.bitwarden.desktop/data
+
+[Environment]
+SSH_AUTH_SOCK={{ .chezmoi.homeDir }}/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock
+{{- end }}
