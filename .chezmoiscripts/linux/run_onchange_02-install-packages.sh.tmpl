@@ -10,6 +10,8 @@ echo "[-] Installing packages using DNF (AlmaLinux/Fedora) [-]"
 {{ range .packages.linux.dnfs -}}
 {{- if and (eq . "code") $.wsl }}
 echo "Skipping {{ . }} on WSL (use VS Code on Windows host with WSL extension)"
+{{- else if and (eq . "epel-release") (eq $.chezmoi.osRelease.id "fedora") }}
+echo "Skipping {{ . }} on Fedora (EPEL is for RHEL-based distros only)"
 {{- else }}
 if ! rpm -q {{ . | quote }} >/dev/null 2>&1; then
     echo "Installing {{ . }}..."
