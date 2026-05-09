@@ -11,8 +11,7 @@ echo "[-] Setting up repositories for Fedora/AlmaLinux [-]"
 # Node.js 22 LTS Repository Setup (NodeSource)
 if [ ! -f /etc/yum.repos.d/nodesource.repo ]; then
     echo "Setting up Node.js 22 LTS repository..."
-    sudo rpm --import https://rpm.nodesource.com/gpgkey/nodesource-repo.gpg.key
-    printf '[nodesource-22]\nname=Node.js-22.x\nbaseurl=https://rpm.nodesource.com/pub_22.x/nodistro/nodejs/$basearch/\ngpgcheck=1\ngpgkey=https://rpm.nodesource.com/gpgkey/nodesource-repo.gpg.key\nenabled=1\npriority=9\ndisableexcludes=main\n' | sudo tee /etc/yum.repos.d/nodesource.repo > /dev/null
+    curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
     echo "Node.js 22 LTS repository configured successfully"
 else
     echo "Node.js repository already configured"
@@ -54,11 +53,8 @@ echo "[-] Setting up repositories for Debian/Ubuntu [-]"
 # Node.js 22 LTS Repository Setup (NodeSource)
 if [ ! -f /etc/apt/sources.list.d/nodesource.list ]; then
     echo "Setting up Node.js 22 LTS repository..."
-    sudo apt-get install -y ca-certificates gnupg
-    sudo mkdir -p /etc/apt/keyrings
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null
-    sudo apt-get update
+    sudo apt-get install -y ca-certificates curl
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
     echo "Node.js 22 LTS repository configured successfully"
 else
     echo "Node.js repository already configured"
