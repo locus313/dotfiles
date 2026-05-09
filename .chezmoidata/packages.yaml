@@ -14,6 +14,7 @@ packages:
       - ncdu
       - ansible
       - ansible-lint
+      - node@22
     casks:
       - obsidian
       - font-caskaydia-cove-nerd-font
@@ -31,6 +32,7 @@ packages:
       - ncdu
       - awscli
       - code
+      - nodejs
     apts:
       - git
       - curl
@@ -44,6 +46,7 @@ packages:
       - direnv
       - awscli
       - code
+      - nodejs
     flatpak:
       - com.bitwarden.desktop
       - com.discordapp.Discord
@@ -80,6 +83,7 @@ packages:
        - OpenWhisperSystems.Signal
        - Greenshot.Greenshot
        - Warrensbox.TerraformSwitcher
+       - OpenJS.NodeJS.LTS
      msstore:
      pmode:
         winget:
@@ -93,7 +97,6 @@ packages:
           - Plex.Plex
           - Synology.SynologyDriveClient
           - Tailscale.Tailscale
-          - OpenJS.NodeJS.LTS
           - TheDocumentFoundation.LibreOffice
      ptxmode:
         winget:
