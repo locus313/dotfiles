@@ -6,6 +6,10 @@ else
     echo "Warning: oh-my-posh not found. Install it for enhanced prompt."
 fi
 
+if [[ "$TERM_PROGRAM" == "vscode" ]] && (( ${+functions[_omp_hook]} )); then
+  PROMPT_COMMAND=("_omp_hook" "${PROMPT_COMMAND[@]/_omp_hook/}")
+fi
+
 # Source bash aliases if available
 if [ -f ~/.bash_aliases ]; then
     source ~/.bash_aliases

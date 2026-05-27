@@ -157,6 +157,10 @@ else
     echo "Warning: oh-my-posh not found. Install it for enhanced prompt." >&2
 fi
 
+if [[ "$TERM_PROGRAM" == "vscode" && "$(type -t _omp_hook)" == "function" ]]; then
+  PROMPT_COMMAND=("_omp_hook" "${PROMPT_COMMAND[@]/_omp_hook/}")
+fi
+
 if command -v direnv >/dev/null 2>&1; then
     eval "$(direnv hook bash)"
 fi
