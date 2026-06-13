@@ -14,7 +14,7 @@ Host github.com
   # .pub file intentionally used: when authenticating via the Bitwarden SSH agent,
   # specifying the public key tells SSH which key to offer from the agent without
   # requiring the private key on disk. OpenSSH resolves the agent key by public key match.
-  IdentityFile ~/.ssh/id_rsa.pub
+  IdentityFile ~/.ssh/ed25519.pub
   IdentityAgent ~/.bitwarden-ssh-agent.sock
   {{- end }}
   {{- if eq .ptxmode true }}
