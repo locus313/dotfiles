@@ -18,7 +18,11 @@
 
 {{- if (or $pmode $oagmode) }}
 [bitwarden]
+{{- if eq .chezmoi.os "windows" }}
+    command = "bw"
+{{- else }}
     command = "{{ .chezmoi.homeDir }}/.local/bin/bw"
+{{- end }}
 {{- end }}
 
 [hooks.read-source-state.pre]
