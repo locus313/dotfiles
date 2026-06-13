@@ -1,3 +1,5 @@
-{{- if eq .oagmode true }}
+{{- if eq .pmode true }}
+{{ (index (bitwardenFields "item" "chezmoi") "pmode-ssh-pub").value }}
+{{- else if eq .oagmode true }}
 {{ (index (bitwardenFields "item" "chezmoi") "oagmode-ssh-pub").value }}
 {{- end }}

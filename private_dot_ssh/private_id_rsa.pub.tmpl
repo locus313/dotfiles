@@ -1,3 +1,0 @@
-{{- if (or (eq .pmode true) (eq .oagmode true)) }}
-{{ (index (bitwardenFields "item" "chezmoi") "pmode-ssh-pub").value }}
-{{- end }}
