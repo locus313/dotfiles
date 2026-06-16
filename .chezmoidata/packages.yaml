@@ -18,6 +18,10 @@ packages:
     casks:
       - obsidian
       - font-caskaydia-cove-nerd-font
+    oagmode:
+      brews:
+        - awscli
+        - aws-vault
   linux:
     dnfs:
       - epel-release

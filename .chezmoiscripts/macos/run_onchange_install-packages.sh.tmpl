@@ -18,6 +18,13 @@ echo "[-] Installing casks [-]"
 brew install --cask {{ . | quote }}
 {{ end -}}
 
+{{- if .oagmode }}
+echo "[-] Installing oagmode brews [-]"
+{{ range .packages.darwin.oagmode.brews -}}
+brew install {{ . | quote }}
+{{ end -}}
+{{- end }}
+
 echo "[-] Installing VS Code extensions [-]"
 {{ range .extensions.darwin.vscode -}}
 if ! code --list-extensions | grep -qF {{ . | quote }}; then
