@@ -22,6 +22,7 @@ packages:
       brews:
         - awscli
         - aws-vault
+        - tfenv
   linux:
     dnfs:
       - epel-release
