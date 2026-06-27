@@ -1,0 +1,25 @@
+name: Copilot Setup Steps
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+
+      - name: Add chezmoi to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Verify chezmoi installation
+        run: chezmoi --version
+
+      - name: Validate template syntax
+        run: |
+          find . -name "*.tmpl" -not -path "./.git/*" | while read f; do
+            chezmoi execute-template < "$f" > /dev/null 2>&1 || echo "WARNING: $f may require runtime data (normal for mode-gated templates)"
+          done

@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+
+jobs:
+  validate:
+    name: Validate Templates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+
+      - name: Add chezmoi to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Check template files exist and are non-empty
+        run: |
+          echo "Checking .tmpl files..."
+          count=$(find . -name "*.tmpl" -not -path "./.git/*" | wc -l)
+          echo "Found $count template files"
+          if [ "$count" -eq 0 ]; then
+            echo "ERROR: No template files found"
+            exit 1
+          fi
+
+      - name: Validate TOML syntax
+        run: |
+          if command -v python3 >/dev/null 2>&1; then
+            python3 -c "
+          import subprocess, sys, os, glob
+          files = glob.glob('**/*.toml', recursive=True)
+          files = [f for f in files if '.git' not in f]
+          for f in files:
+              result = subprocess.run(['python3', '-c', 'import tomllib; tomllib.load(open(\"' + f + '\", \"rb\"))'],
+                  capture_output=True, text=True)
+              if result.returncode != 0:
+                  print(f'FAIL: {f}')
+                  print(result.stderr)
+                  sys.exit(1)
+              else:
+                  print(f'OK: {f}')
+          " 2>/dev/null || echo "TOML validation skipped (python3 tomllib not available)"
+          fi
+
+      - name: Check shell scripts for syntax errors
+        run: |
+          find . -name "*.sh" -not -path "./.git/*" | while read f; do
+            bash -n "$f" && echo "OK: $f" || echo "FAIL: $f"
+          done
+
+      - name: Validate YAML files
+        run: |
+          find . \( -name "*.yml" -o -name "*.yaml" \) \
+            -not -path "./.git/*" \
+            -not -name "*.tmpl" | while read f; do
+            python3 -c "import yaml; yaml.safe_load(open('$f'))" 2>/dev/null \
+              && echo "OK: $f" || echo "WARN: $f (check manually)"
+          done

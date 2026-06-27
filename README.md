@@ -3,6 +3,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/locus313/dotfiles?style=flat-square)](https://github.com/locus313/dotfiles/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Chezmoi](https://img.shields.io/badge/managed%20with-chezmoi-000000?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ij4KICA8cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJ6Ii8+Cjwvc3ZnPgo=)](https://chezmoi.io)
+[![AI Ready](https://img.shields.io/badge/AI--Ready-yes-brightgreen?style=flat)](https://github.com/johnpapa/ai-ready)
 
 > A sophisticated cross-platform dotfiles management system using chezmoi for seamless configuration deployment across Windows, Linux, and macOS environments.
 
@@ -187,11 +188,28 @@ For issues specific to this dotfiles setup, check the template files and mode co
 
 ## Contributing
 
-Contributions are welcome! When adding new features:
-- Respect the mode system - add appropriate mode checks
-- Test template changes across multiple platforms
-- Update external tool versions in `.chezmoiexternal.toml` when needed
-- Follow the existing naming conventions for template files
+Contributions are welcome! See [AGENTS.md](AGENTS.md) for full project context, structure, and conventions.
+
+**Setup:**
+```bash
+# Install chezmoi and clone
+sh -c "$(curl -fsSL https://get.chezmoi.io)"
+chezmoi init --apply locus313/dotfiles
+```
+
+**Preview changes before applying:**
+```bash
+chezmoi diff
+chezmoi apply
+```
+
+**When contributing:**
+- Respect the mode system — add appropriate mode checks (`{{- if .pmode }}`, etc.)
+- Test template changes across multiple platforms using `chezmoi diff`
+- Add new packages to `.chezmoidata/packages.yaml`, not hardcoded in scripts
+- Keep install scripts idempotent — check before installing
+- Never commit secrets — use Bitwarden/1Password template functions
+- Use the PR template checklist when opening a pull request
 
 ## License
 

@@ -1,0 +1,52 @@
+name: Feature Request
+description: Suggest a new dotfiles feature, tool integration, or platform support
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea? Fill out the form below.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - New tool / package
+        - New shell alias or function
+        - New platform support
+        - External binary (.chezmoiexternal.toml)
+        - PowerShell enhancement
+        - New VS Code extension
+        - Cross-platform improvement
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Target Platform(s)
+      multiple: true
+      options:
+        - All platforms
+        - Linux
+        - macOS
+        - Windows
+        - WSL2
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: What would you like to add or improve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why This Helps
+      description: Why would this be useful in a dotfiles context?
+    validations:
+      required: true
