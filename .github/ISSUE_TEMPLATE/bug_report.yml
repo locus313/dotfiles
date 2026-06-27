@@ -1,0 +1,74 @@
+name: Bug Report
+description: Report a template rendering error, cross-platform issue, or install failure
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill out the sections below.
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Which platform are you running this on?
+      multiple: true
+      options:
+        - Linux (Debian/Ubuntu/Pop!_OS)
+        - Linux (Fedora)
+        - Linux (AlmaLinux/CentOS)
+        - Linux (Arch)
+        - Linux (Other)
+        - macOS
+        - Windows
+        - WSL2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Chezmoi Mode
+      description: Which mode was active when the issue occurred?
+      options:
+        - pmode (personal/Bitwarden)
+        - oagmode (enterprise/Bitwarden)
+        - ptxmode (corporate/1Password)
+        - No mode set
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: What went wrong? What did you expect to happen?
+      placeholder: Describe the bug...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Run `chezmoi apply`
+        2. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Error Output
+      description: Paste any error messages or relevant output
+      render: shell
+
+  - type: input
+    id: chezmoi-version
+    attributes:
+      label: chezmoi Version
+      description: Run `chezmoi --version`
+      placeholder: "e.g., chezmoi version v2.x.x"
