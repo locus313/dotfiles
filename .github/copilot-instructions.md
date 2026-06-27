@@ -271,3 +271,23 @@ Standard pattern for binary downloads:
 - New packages belong in `.chezmoidata/packages.yaml` under the appropriate platform and mode section
 - New VS Code extensions belong in `.chezmoidata/packages.yaml` under `extensions.{platform}.vscode`
 - Keep shell scripts POSIX-compatible (`#!/bin/sh`) unless bash-specific features are required
+
+## Maintenance Matrix
+
+When you change one of these files, you **must also update** the listed dependents. Agents: treat this as a required checklist, not a suggestion.
+
+| When you change… | Also update… | Why |
+|---|---|---|
+| `.chezmoidata/packages.yaml` | `.chezmoiscripts/{platform}/run_onchange_*` scripts that iterate package lists | Scripts consume the YAML; new sections need new iteration logic |
+| `.chezmoi.toml.tmpl` | `AGENTS.md` (Mode System section), `dot_bashrc.tmpl` / `Microsoft.PowerShell_profile.ps1.tmpl` if new data keys added | New `promptStringOnce`/`promptBoolOnce` keys must be documented and consumed |
+| `.chezmoiexternal.toml` | `AGENTS.md` (Tech Stack table) if a new tool category is added | External tool inventory must stay current |
+| `Microsoft.PowerShell_profile.ps1.tmpl` | `Scripts/Powershell/` modules it dot-sources; run `Measure-Command { . $PROFILE }` to verify load time stays under 700ms | Profile sources helper modules; timing regresses silently |
+| `dot_bashrc.tmpl` | `dot_bash_aliases.tmpl` if aliases reference new functions; `dot_profile.tmpl` if PATH changes needed | Aliases depend on functions; PATH must be consistent across login/interactive shells |
+| `dot_zshrc.tmpl` | `dot_zprofile.tmpl` for any login-shell PATH changes | zprofile runs for login shells; zshrc for interactive — PATH set in wrong file breaks non-interactive sessions |
+| `dot_gitconfig.tmpl` | `private_dot_ssh/private_config.tmpl` if SSH command path changes (WSL / oagmode socket) | Git SSH command and SSH config must agree on binary path and agent socket |
+| `.chezmoihooks/install-password-manager*.{sh,ps1}` | `.chezmoi.toml.tmpl` pre-hooks list if hook filename changes | toml.tmpl enumerates hook scripts by name |
+| Adding a new **mode** (new `.modeXX` variable in `.chezmoi.toml.tmpl`) | Every template that checks modes (`{{- if (or .pmode .oagmode) }}`), `AGENTS.md` (Modes table), `Microsoft.PowerShell_profile.ps1.tmpl` `cz` function, `.chezmoihooks/` | Modes gate secrets, hooks, and the `cz` wrapper; all must be updated together |
+| Adding a new **Linux distro** guard (`osRelease.id`) | `.chezmoiscripts/linux/` install scripts, `.chezmoidata/packages.yaml` distro sections, `dot_bashrc.tmpl` distro-specific blocks | All three files branch on distro; a new distro needs entries in all three |
+| `private_dot_ssh/private_config.tmpl` | `dot_gitconfig.tmpl` (`sshCommand`), `dot_bashrc.tmpl` / `dot_zshrc.tmpl` ssh/ssh-add aliases | SSH config, git SSH command, and shell aliases must all point to the same binary/socket |
+| `dot_terraform-version.tmpl` | `AGENTS.md` (Tech Stack table), `dot_bashrc.tmpl` / `dot_profile.tmpl` tfenv PATH block | tfenv PATH and version pin must be consistent across all shell init files |
+| `CHANGELOG.md` | Nothing required — but update it on every PR | Keep a Changelog format; one entry per meaningful change |
