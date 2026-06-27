@@ -157,8 +157,33 @@ else
     echo "Warning: oh-my-posh not found. Install it for enhanced prompt." >&2
 fi
 
-if [[ "$TERM_PROGRAM" == "vscode" && "$(type -t _omp_hook)" == "function" ]]; then
-  PROMPT_COMMAND=("_omp_hook" "${PROMPT_COMMAND[@]/_omp_hook/}")
+# Fix for VS Code shell integration + oh-my-posh in bash/WSL.
+# VS Code injects __vsc_prompt_cmd_original AFTER .bashrc runs by prepending it,
+# leaving _omp_hook as a top-level entry that runs AFTER __vsc_prompt_cmd_original
+# and overwrites PS1, stripping the OSC 633 A/B sequences Copilot needs.
+# This lazy fix runs on the first prompt (after VS Code has injected) and wraps
+# _omp_hook to always re-apply VS Code's sequences after OMP sets PS1.
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    _vscode_omp_fix_once() {
+        local cmd new=()
+        for cmd in "${PROMPT_COMMAND[@]}"; do
+            [[ "$cmd" != "_vscode_omp_fix_once" ]] && new+=("$cmd")
+        done
+        PROMPT_COMMAND=("${new[@]}")
+        declare -p __vsc_original_prompt_command &>/dev/null 2>&1 && {
+            new=()
+            for cmd in "${__vsc_original_prompt_command[@]}"; do
+                [[ "$cmd" != "_vscode_omp_fix_once" && "$cmd" != "_omp_hook" ]] && new+=("$cmd")
+            done
+            __vsc_original_prompt_command=("${new[@]}")
+        }
+        declare -f _omp_hook_base &>/dev/null 2>&1 && return
+        declare -f _omp_hook &>/dev/null 2>&1 || return
+        declare -f __vsc_precmd &>/dev/null 2>&1 || return
+        eval "$(declare -f _omp_hook | sed 's/^_omp_hook ()/_omp_hook_base ()/')"
+        _omp_hook() { _omp_hook_base; __vsc_precmd; }
+    }
+    PROMPT_COMMAND+=("_vscode_omp_fix_once")
 fi
 
 if command -v direnv >/dev/null 2>&1; then

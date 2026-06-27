@@ -6,8 +6,40 @@ else
     echo "Warning: oh-my-posh not found. Install it for enhanced prompt."
 fi
 
-if [[ "$TERM_PROGRAM" == "vscode" ]] && (( ${+functions[_omp_hook]} )); then
-  PROMPT_COMMAND=("_omp_hook" "${PROMPT_COMMAND[@]/_omp_hook/}")
+# Fix for VS Code shell integration + oh-my-posh in zsh/macOS.
+# VS Code injects its precmd hooks AFTER .zshrc, and OMP has two PS1 update paths:
+#   1. Sync:  _omp_precmd in precmd_functions
+#   2. Async: _omp_async_handler (fd-based, calls zle reset-prompt directly)
+# Both can overwrite PS1 after VS Code's __vsc_precmd has wrapped it with the OSC 633
+# A/B sequences Copilot needs for terminal integration.
+# This lazily wraps both paths on first prompt (after VS Code has injected its hooks).
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    _vscode_omp_zsh_fix() {
+        # __vsc_precmd not yet available — VS Code hasn't injected; retry next prompt
+        (( ${+functions[__vsc_precmd]} )) || return
+        (( ${+functions[_omp_precmd]} )) || { precmd_functions=("${(@)precmd_functions:#_vscode_omp_zsh_fix}"); return; }
+        precmd_functions=("${(@)precmd_functions:#_vscode_omp_zsh_fix}")
+        # Guard: only apply once
+        (( ${+functions[_omp_precmd_orig]} )) && return
+
+        # Wrap sync precmd path: ensure __vsc_precmd runs after OMP sets PS1
+        functions[_omp_precmd_orig]=$functions[_omp_precmd]
+        _omp_precmd() { _omp_precmd_orig; __vsc_precmd; }
+
+        # Wrap async path: _omp_async_handler sets PS1 and calls zle reset-prompt
+        # directly (bypassing precmd_functions), so we must intercept it too.
+        if (( ${+functions[_omp_async_handler]} )); then
+            functions[_omp_async_handler_orig]=$functions[_omp_async_handler]
+            _omp_async_handler() {
+                _omp_async_handler_orig "$@"
+                # Skip if it was an EOF/cleanup call (no prompt was rendered)
+                [[ -n "$_omp_primary_prompt" ]] || return
+                __vsc_precmd
+                zle reset-prompt 2>/dev/null
+            }
+        fi
+    }
+    precmd_functions+=(_vscode_omp_zsh_fix)
 fi
 
 # Source bash aliases if available
