@@ -15,7 +15,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
 fi
 export PATH="$HOME/.local/bin:$PATH"
 
-if [ ! "$(command -v chezmoi)" ]; then
+if ! command -v chezmoi >/dev/null 2>&1; then
     echo "chezmoi not found, installing..."
     bin_dir="$HOME/.local/bin"
     chezmoi="$bin_dir/chezmoi"
@@ -23,12 +23,12 @@ if [ ! "$(command -v chezmoi)" ]; then
     # Create bin directory if it doesn't exist
     mkdir -p "$bin_dir"
     
-    if [ "$(command -v curl)" ]; then
+    if command -v curl >/dev/null 2>&1; then
         echo "Downloading chezmoi using curl..."
-        sh -c "$(curl -fsSL get.chezmoi.io)" -- -b "$bin_dir"
-    elif [ "$(command -v wget)" ]; then
+        sh -c "$(curl -fsSL https://get.chezmoi.io)" -- -b "$bin_dir"
+    elif command -v wget >/dev/null 2>&1; then
         echo "Downloading chezmoi using wget..."
-        sh -c "$(wget -qO- get.chezmoi.io)" -- -b "$bin_dir"
+        sh -c "$(wget -qO- https://get.chezmoi.io)" -- -b "$bin_dir"
     else
         echo "Error: To install chezmoi, you must have curl or wget installed." >&2
         exit 1
