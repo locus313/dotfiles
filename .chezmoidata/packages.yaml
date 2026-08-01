@@ -76,6 +76,7 @@ packages:
         - steam-installer
       dnfs:
         - steam
+        - xpipe
   windows:
      powershell:
        - Posh-Git

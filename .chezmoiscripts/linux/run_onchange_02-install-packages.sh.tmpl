@@ -26,6 +26,8 @@ echo "[-] Installing pmode packages using DNF [-]"
 {{ range .packages.linux.pmode.dnfs -}}
 {{- if and (eq . "steam") $.wsl }}
 echo "Skipping {{ . }} on WSL (not supported in WSL environment)"
+{{- else if and (eq . "xpipe") (ne $.chezmoi.osRelease.id "fedora") }}
+echo "Skipping {{ . }} (XPipe repository is only configured for Fedora)"
 {{- else }}
 if ! rpm -q {{ . | quote }} >/dev/null 2>&1; then
     echo "Installing {{ . }}..."

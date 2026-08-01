@@ -45,6 +45,17 @@ fi
 echo "Skipping VS Code repository setup on WSL (use VS Code on Windows host with WSL extension)"
 {{- end }}
 
+{{- if (and .pmode (eq $.chezmoi.osRelease.id "fedora")) }}
+# XPipe Repository Setup (DNF 5+)
+if [ ! -f /etc/yum.repos.d/xpipe.repo ]; then
+    echo "Setting up XPipe repository..."
+    sudo dnf config-manager addrepo --from-repofile=https://rpm.xpipe.io/xpipe.repo
+    echo "XPipe repository configured successfully"
+else
+    echo "XPipe repository already configured"
+fi
+{{- end }}
+
 {{- end }}
 
 {{- if (eq .chezmoi.osRelease.id "debian" "ubuntu" "pop") }}
